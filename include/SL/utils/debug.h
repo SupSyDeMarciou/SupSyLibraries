@@ -1,6 +1,7 @@
 #ifndef __SL_UTILS_DEBUG
 #define __SL_UTILS_DEBUG
 
+#ifdef _glfw3_h_
 #include "../structures.h"
 
 /// @brief Unique identifier for a timer
@@ -31,7 +32,6 @@ double debugDestroyTimer(timer ID);
 /// @param ID The identifier of the timer
 void debugPrintTimer(timer ID);
 
-#ifdef _glfw3_h_
 /// @brief Print an OpenGL error message if one is present
 void debugCheckGLError();
 #endif
