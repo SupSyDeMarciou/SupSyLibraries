@@ -4,7 +4,7 @@ The SupSyLibrairies (SL) are a set of useful functions and types developped for 
 Functions and structures introduced follow a standardized synthax (for the most part) to provide a smooth experience when using auto-completion and suggestions, but also so they can easily be remembered and infered from previous experience. All functions and most structures have detailled comments which explain how to use them.
 
 ## Prerequisites
-This librairy is standalone and ready to be used as-is. It provides some additionnal features when using **GLFW3** but it is not required for the majority of the SL.
+This librairy is standalone and ready to be used as-is. It provides some additionnal features when using [**GLFW3**](https://www.glfw.org/) but it is not required for the majority of the SL.
 
 ## Synthax Overview
 ### Structures
