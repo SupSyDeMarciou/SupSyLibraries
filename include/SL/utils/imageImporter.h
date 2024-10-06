@@ -28,14 +28,12 @@ void destroyImage2D(image2D toDestroy);
 /// @param path The path to the image
 /// @param extension The extension of the image
 /// @return The data contained in the image
-/// @warning ONLY PPM AND PNG ARE CURRENTLY SUPPORTED
 image2D importImage(const char* path, img_ext extension);
 
 /// @brief Export an image
 /// @param image The source to export
 /// @param extension The extension of the exported image
 /// @param path Where to store the image
-/// @warning ONLY PPM IS CURRENTLY SUPPORTED
 void exportImage(image2D image, img_ext extension, const char* path);
 
 #endif

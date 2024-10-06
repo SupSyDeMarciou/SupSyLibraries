@@ -55,13 +55,13 @@ bool arrayAdd_P(array* a, void* val);
 /// @param count The number of elements to add
 /// @return Wether the array has been reallocated
 /// @note Setting "elements" to NULL will add zero-ed out element
-bool arrayAddMultiple(array* a, void* elements, uint count);
+bool arrayAdd_Multiple(array* a, void* elements, uint count);
 /// @brief Add array elements to another array
 /// @param a The array to modify
 /// @param b The array to sample from
 /// @param count The number of elements to add
 /// @return Wether the array has been reallocated
-bool arrayAddArray(array* a, array* b, uint count);
+bool arrayAdd_Array(array* a, array* b, uint count);
 
 /// @brief Get the number of objects in an array
 /// @param a The array to inspect

@@ -1,5 +1,5 @@
-#ifndef __SL_MATH_QUATERNION
-#define __SL_MATH_QUATERNION
+#ifndef __SL_MATHS_QUATERNION
+#define __SL_MATHS_QUATERNION
 
 #include "vector.h"
 

@@ -1,5 +1,5 @@
-#ifndef __SL_MATH_VECTOR
-#define __SL_MATH_VECTOR
+#ifndef __SL_MATHS_VECTOR
+#define __SL_MATHS_VECTOR
 
 #include <math.h>
 #include "constants.h"

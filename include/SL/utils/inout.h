@@ -4,7 +4,6 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <pthread.h>
 
 #include "../structures.h"
 
@@ -13,9 +12,7 @@
     /// @param message The message to be displayed when called
     /// @note If using GLFW, will call terminate automatically
     #define failWithError(message, ...) do { \
-        fprintf(stderr, "ERROR - [%s]:\n\t", __FUNCTION__); \
-        fprintf(stderr, message, ##__VA_ARGS__); \
-        fprintf(stderr, "\nLine %d in file %s.", __LINE__, __FILE__); \
+        fprintf(stderr, "ERROR - [%s]:\n\t"message"\nat %s:%d.", __FUNCTION__, ##__VA_ARGS__, __FILE__, __LINE__); \
         glfwTerminate(); \
         exit(EXIT_FAILURE); \
     } while (false)
@@ -24,18 +21,12 @@
     /// @param message The message to be displayed when called
     /// @note If using GLFW, will call terminate automatically
     #define failWithError(message, ...) do { \
-        fprintf(stderr, "ERROR - [%s]:\n\t", __FUNCTION__); \
-        fprintf(stderr, message, ##__VA_ARGS__); \
-        fprintf(stderr, "\nLine %d in file %s.", __LINE__, __FILE__); \
+        fprintf(stderr, "ERROR - [%s]:\n\t"message"\nat %s:%d.", __FUNCTION__, ##__VA_ARGS__, __FILE__, __LINE__); \
         exit(EXIT_FAILURE); \
     } while (false)
 #endif
 
-#define throwWarning(message, ...) do { \
-    fprintf(stderr, "WARNING - [%s]:\n\t", __FUNCTION__); \
-    fprintf(stderr, message, ##__VA_ARGS__); \
-    fprintf(stderr, "\n"); \
-} while (false)
+#define throwWarning(message, ...) fprintf(stderr, "WARNING - [%s]:\n\t"message"\nat %s:%d.", __FUNCTION__, ##__VA_ARGS__, __LINE__, __FILE__)
 
 /// @brief Reads the contents of a file at filePath in a string
 /// @param filePath The path to the file (full path)
@@ -102,7 +93,7 @@ int SL_readNum(const char* line, uint i);
 /// @param a Left string
 /// @param b Right string
 /// @return Wether the two strings matched
-bool SL_cmpStr (const char* a, const char* b);
+bool SL_cmpStr(const char* a, const char* b);
 /// @brief Match a factor inside of a string
 /// @param text The text to inspect
 /// @param factor The factor to find

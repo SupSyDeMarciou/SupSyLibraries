@@ -1,5 +1,5 @@
-#ifndef __SL_MATH_MATH
-#define __SL_MATH_MATH
+#ifndef __SL_MATHS_MATH
+#define __SL_MATHS_MATH
 
 #include "../structures.h"
 #include "constants.h"

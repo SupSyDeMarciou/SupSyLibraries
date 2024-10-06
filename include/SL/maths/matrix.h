@@ -1,13 +1,13 @@
-#ifndef __SL_MATH_MATRIX
-#define __SL_MATH_MATRIX
+#ifndef __SL_MATHS_MATRIX
+#define __SL_MATHS_MATRIX
 
 #include "vector.h"
 #include "quaternion.h"
 #include "../structures.h"
 #include "../utils/inout.h"
 
-// Undefine this macro to remove bounds checks
-#define __SL_MATH_MATRIX_SAFE
+// Undefine this macro to remove bounds checks (WORKS ONLY FOR ME)
+#define __SL_MATHS_MATRIX_SAFE
 
 
 

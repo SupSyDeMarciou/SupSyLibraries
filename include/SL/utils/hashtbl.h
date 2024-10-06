@@ -1,4 +1,4 @@
-#include <SupSy/SL.h>
+#include "../../SL.h"
 
 /// @brief Hash table structure
 typedef struct HashTable hash_tbl;
