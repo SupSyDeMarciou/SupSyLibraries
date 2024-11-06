@@ -12,7 +12,7 @@
     /// @param message The message to be displayed when called
     /// @note If using GLFW, will call terminate automatically
     #define failWithError(message, ...) do { \
-        fprintf(stderr, "ERROR - [%s]:\n\t"message"\nat %s:%d.", __FUNCTION__, ##__VA_ARGS__, __FILE__, __LINE__); \
+        fprintf(stderr, "ERROR - [%s]:\n\t"message"\nat %s:%d\n", __FUNCTION__, ##__VA_ARGS__, __FILE__, __LINE__); \
         glfwTerminate(); \
         exit(EXIT_FAILURE); \
     } while (false)
@@ -21,12 +21,12 @@
     /// @param message The message to be displayed when called
     /// @note If using GLFW, will call terminate automatically
     #define failWithError(message, ...) do { \
-        fprintf(stderr, "ERROR - [%s]:\n\t"message"\nat %s:%d.", __FUNCTION__, ##__VA_ARGS__, __FILE__, __LINE__); \
+        fprintf(stderr, "ERROR - [%s]:\n\t"message"\nat %s:%d\n", __FUNCTION__, ##__VA_ARGS__, __FILE__, __LINE__); \
         exit(EXIT_FAILURE); \
     } while (false)
 #endif
 
-#define throwWarning(message, ...) fprintf(stderr, "WARNING - [%s]:\n\t"message"\nat %s:%d.", __FUNCTION__, ##__VA_ARGS__, __LINE__, __FILE__)
+#define throwWarning(message, ...) fprintf(stderr, "WARNING - [%s]:\n\t"message"\nat %s:%d\n", __FUNCTION__, ##__VA_ARGS__, __FILE__, __LINE__)
 
 /// @brief Reads the contents of a file at filePath in a string
 /// @param filePath The path to the file (full path)
