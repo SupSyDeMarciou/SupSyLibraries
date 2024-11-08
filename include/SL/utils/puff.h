@@ -45,14 +45,17 @@
  *   expected values to check.
  */
 
-int puff_(unsigned char *dest,           /* pointer to destination pointer */
-         unsigned long *destlen,        /* amount of output space */
-         const unsigned char *source,         /* pointer to source data pointer */
-         unsigned long *sourcelen);      /* amount of input available */
+// int puff_(unsigned char *dest,           /* pointer to destination pointer */
+//          unsigned long *destlen,        /* amount of output space */
+//          const unsigned char *source,         /* pointer to source data pointer */
+//          unsigned long *sourcelen);      /* amount of input available */
 
-#ifndef SGE_DONT_USE_PNG
-#   define puff(dest, destlen, source, sourcelen) puff_(dest, destlen, source, sourcelen)
-#else
+// #ifndef SGE_DONT_USE_PNG
+// #   define puff(dest, destlen, source, sourcelen) puff_(dest, destlen, source, sourcelen)
+// #else
+// #   include "inout.h"
+// #   define puff(dest, destlen, source, sourcelen) failWithError("PNG format has been deactivated!");
+// #endif
+
 #   include "inout.h"
-#   define puff(dest, destlen, source, sourcelen) failWithError("PNG format has been deactivated!");
-#endif
+int puff(unsigned char *dest, unsigned long *destlen, const unsigned char *source, unsigned long *sourcelen) { failWithError("PNG format has been deactivated!"); return 0; }
