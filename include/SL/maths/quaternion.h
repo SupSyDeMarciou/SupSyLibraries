@@ -46,13 +46,13 @@ static inline quat Quat_V(float w, const vec3 v) {
 /// @return The newly created quaternion
 /// @note Rotations are applied in this order: (pitch, yaw, roll)
 /// @note Thank you wikipedia
-static inline quat Quat_Euler(float l, float m, float n) {
-    float cr = cos(l * 0.5);
-    float sr = sin(l * 0.5);
-    float cp = cos(m * 0.5);
-    float sp = sin(m * 0.5);
-    float cy = cos(n * 0.5);
-    float sy = sin(n * 0.5);
+static inline quat Quat_Euler(float pitch, float yaw, float roll) {
+    float cr = cos(roll * 0.5);
+    float sr = sin(roll * 0.5);
+    float cp = cos(pitch * 0.5);
+    float sp = sin(pitch * 0.5);
+    float cy = cos(yaw * 0.5);
+    float sy = sin(yaw * 0.5);
 
     return (quat) {
         cr * cp * cy + sr * sp * sy,
