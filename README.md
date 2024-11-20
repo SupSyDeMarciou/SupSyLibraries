@@ -4,7 +4,7 @@ The SupSyLibraries (SL) are a set of useful functions and types developped for (
 Functions and structures follow a standardized syntax (for the most part) to provide a smoother experience when using auto-completion and suggestions, but also so they can easily be remembered and infered from previous experience. All functions and most structures have detailled comments which explain how to use them.
 
 ## Prerequisites
-This librairy is standalone and ready to be used as-is. It provides some additionnal features when using **GLFW3**, but it is not required for the majority of the SL.
+This librairy is standalone and ready to be used as-is, no dependencies required.
 
 ## Synthax Overview
 ### Structures
@@ -23,7 +23,6 @@ Functions which correspond to mathematical operations are suffixed by the name(s
 Functions which operate on a specific structure or which are tied to a specific process are prefixed by the name of said structure or process.
 >For example: <br>
 >- `void* dictGet(dict* d, void* key);` operates on structure `dict` and *gets* the element associated with a certain *key*. <br>
->- `void debugStartTimer(timer ID);` operates on the process `debug` and *starts* the timer of given *ID*.
 
 In addition, most structures have **constructors** and **destructors** for *stack* allocation as well as *heap* allocation which follow this synthax: <br>
 > Let's say we are working with this type: `typedef struct MyStruct my_struct;`. Then: <br>
@@ -35,7 +34,7 @@ In addition, most structures have **constructors** and **destructors** for *stac
 Some functions have multiple *overloads* and are therefore suffixed with their specific purpose.
 >For example:
 >- `quat Quat(float x, float y, float z, float w)` allocates a quaternion `quat` on the *stack* <br>
->- `quat Quat_Euler(float l, float m, float n)` allocates a **unit** quaternion `quat` on the *stack* **representing the rotation given by the Euler angles l, m and n**. <br>
+>- `quat Quat_Euler(float yaw, float pitch, float roll)` allocates a **unit** quaternion `quat` on the *stack* **representing the rotation given by the Euler angles yaw, pitch and roll**. <br>
 
 Some miscellanoeus functions are simply prefixed by `SL_`. These usually either work on built-in C types or are just not tied to any specific structure and/or process.
 
@@ -66,5 +65,3 @@ Utils mainly define general-purpose structures such as `array`, `list`, `hashtbl
 Some of these have associated *macros* to make the user experience a bit more pleasant, but most of them are just wrappers around a function of identical name but with suffix `_P` (for "proper"). This makes it easier to interface with these functions as they usually work with `void*` pointers to make their functionnality independant of type.
 
 Other functions include thoses defined in `inout.h` which are mainly prefixed by `SL_` and which operate on strings, either by analysing them or by printing to a certain output. Here you can find the *very-useful-yet-somehow-not-C-standardized* `char* SL_readFile(const char* path);` which dumps the the entirety of a file into a null-terminated string.
-
-In addition, when using **GLFW3**, basic timers for profiling are defined in `debug.h`.
