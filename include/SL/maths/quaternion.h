@@ -3,17 +3,17 @@
 
 #include "vector.h"
 
-/// @brief Quaternion (x, y, z, w) = x + iy + jz + kw
+/// @brief Quaternion (w, x, y, z) = w + ix + jy + kz
 /// @note where i² = j² = k² = ijk = -1
 typedef struct Quaternion {
-    float x, y, z, w;
+    float w, x, y, z;
 } quat;
 
 /// @brief The identity quaternion representing no rotation: (1, 0, 0, 0)
 extern const quat quat_identity;
 
 #define FMT_QUAT "%f + %fi + %fj + %fk"
-#define XPD_QUAT(q) q.x, q.y, q.z, q.w
+#define XPD_QUAT(q) q.w, q.x, q.y, q.z
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -24,50 +24,50 @@ extern const quat quat_identity;
 
 
 /// @brief Create a quaternion
+/// @param w w component
 /// @param x x component
 /// @param y y component
 /// @param z z component
-/// @param w w component
 /// @return The newly created quaternion
-static inline quat Quat(float x, float y, float z, float w) { 
+static inline quat Quat(float w, float x, float y, float z) { 
     return (quat) {x, y, z, w};
 }
 /// @brief Create a quaternion from real and imaginary parts
 /// @param r real part
 /// @param i imaginary part
 /// @return The newly created quaternion
-static inline quat Quat_V(float w, const vec3 v) {
-    return (quat) {w, v.x, v.y, v.z};
+static inline quat Quat_V(float r, const vec3 i) {
+    return (quat) {r, XPD_VEC3(i)};
 }
 /// @brief Create a quaternion from euler angles
-/// @param pitch The angle around X
 /// @param yaw The angle around Y
-/// @param roll The angle around Z
+/// @param pitch The angle from the floor
+/// @param roll The angle around ViewAxis
 /// @return The newly created quaternion
-/// @note Rotations are applied in this order: (pitch, yaw, roll)
+/// @note Rotations are applied in this order: (roll, pitch, yaw)
 /// @note Thank you wikipedia
-static inline quat Quat_Euler(float pitch, float yaw, float roll) {
-    float cr = cos(roll * 0.5);
-    float sr = sin(roll * 0.5);
-    float cp = cos(pitch * 0.5);
-    float sp = sin(pitch * 0.5);
-    float cy = cos(yaw * 0.5);
-    float sy = sin(yaw * 0.5);
+static inline quat Quat_Euler(float yaw, float pitch, float roll) {
+    double cy = cos(yaw * 0.5);
+    double sy = sin(yaw * 0.5);
+    double cp = cos(pitch * 0.5);
+    double sp = sin(pitch * 0.5);
+    double cr = cos(roll * 0.5);
+    double sr = sin(roll * 0.5);
 
     return (quat) {
-        cr * cp * cy + sr * sp * sy,
-        sr * cp * cy - cr * sp * sy,
-        cr * sp * cy + sr * cp * sy,
-        cr * cp * sy - sr * sp * cy
+        cy * cp * cr - sy * sp * sr,
+        cy * sp * cr - sy * cp * sr,
+        cy * sp * sr + sy * cp * cr,
+        cy * cp * sr + sy * sp * cr
     };
 }
 /// @brief Create a quaternion from euler angles vector
 /// @param v The vector of euler angles
 /// @return The newly created quaternion
-/// @note Rotations are applied in this order: (pitch, yaw, roll)
+/// @note Rotations are applied in this order: (roll, pitch, yaw)
 /// @note Thank you wikipedia
 static inline quat Quat_EulerVector(const vec3 v) {
-    return Quat_Euler(v.x, v.y, v.z);
+    return Quat_Euler(XPD_VEC3(v));
 }
 /// @brief Create a quaternion from angle axis
 /// @param angle The angle of rotation
@@ -84,14 +84,14 @@ static inline quat Quat_AngleAxis(float angle, const vec3 v) {
 /// @param b The right quaternion
 /// @return The resulting quaternion
 static inline quat addQ(const quat a, const quat b) {
-    return (quat) {a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w};
+    return (quat) {a.w + b.w, a.x + b.x, a.y + b.y, a.z + b.z};
 }
 /// @brief Subtract two quaternions
 /// @param a The left quaternion
 /// @param b The right quaternion
 /// @return The resulting quaternion
 static inline quat subQ(const quat a, const quat b) {
-    return (quat) {a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w};
+    return (quat) {a.w + b.w, a.x + b.x, a.y + b.y, a.z + b.z};
 }
 /// @brief Multiply two quaternions
 /// @param a The left quaternion
@@ -99,10 +99,10 @@ static inline quat subQ(const quat a, const quat b) {
 /// @return The resulting quaternion
 static inline quat mulQ(const quat a, const quat b) {
     return (quat) {
-        (a.x * b.x) - (a.y * b.y) - (a.z * b.z) - (a.w * b.w),
-        (a.x * b.y) + (a.y * b.x) - (a.z * b.w) + (a.w * b.z),
-        (a.x * b.z) + (a.y * b.w) + (a.z * b.x) - (a.w * b.y),
-        (a.x * b.w) - (a.y * b.z) + (a.z * b.y) + (a.w * b.x)
+        (a.w * b.w) - (a.x * b.x) - (a.y * b.y) - (a.z * b.z),
+        (a.w * b.x) + (a.x * b.w) + (a.y * b.z) - (a.z * b.y),
+        (a.w * b.y) - (a.x * b.z) + (a.y * b.w) + (a.z * b.x),
+        (a.w * b.z) + (a.x * b.y) - (a.y * b.x) + (a.z * b.w)
     };
 }
 
@@ -111,13 +111,13 @@ static inline quat mulQ(const quat a, const quat b) {
 /// @param s The factor
 /// @return The resulting quaternion
 static inline quat scaleQ(const quat q, float s) {
-    return (quat) {q.x * s, q.y * s, q.z * s, q.w * s};
+    return (quat) {q.w * s, q.x * s, q.y * s, q.z * s};
 }
 /// @brief Get length of a quaternion
 /// @param q The quaternion
 /// @return The length of the quaternion
 static inline float lenQ(const quat q) {
-    return q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w;
+    return q.w * q.w + q.x * q.x + q.y * q.y + q.z * q.z;
 }
 /// @brief Normalize a quaternion
 /// @param q The quaternion
@@ -129,7 +129,7 @@ static inline quat normQ(const quat q) {
 /// @param q The quaternion
 /// @return The resulting quaternion
 static inline quat transpQ(const quat q) {
-    return (quat) {q.x, -q.y, -q.z, -q.w};
+    return (quat) {q.w, -q.x, -q.y, -q.z};
 }
 /// @brief Invert a quaternion
 /// @param q The quaternion
@@ -149,28 +149,28 @@ static inline quat divQ(const quat a, const quat b) {
 /// @param q The quaternion
 /// @return The resulting quaternion
 static inline quat expQ(const quat q) {
-    float ex = exp(q.x);
-    float a = sqrt(q.y * q.y + q.z * q.z + q.w * q.w);
+    float ex = exp(q.w);
+    float a = sqrt(q.x * q.x + q.y * q.y + q.z * q.z);
     float s = a == 0.0 ? 0.0 : ex * sin(a) / a;
 
-    return (quat) {ex * cos(a), q.y * s, q.z * s, q.w * s};
+    return (quat) {ex * cos(a), q.x * s, q.y * s, q.z * s};
 }
 /// @brief Natural logarithm of a quaternion
 /// @param q The quaternion
 /// @return The resulting quaternion
 static inline quat lnQ(const quat q) {
     float l = lenQ(q);
-    float arg = l == 0.0 ? 0.0 : acos(q.x / l) / sqrt(q.y * q.y + q.z * q.z + q.w * q.w);
+    float arg = l == 0.0 ? 0.0 : acos(q.w / l) / sqrt(q.x * q.x + q.y * q.y + q.z * q.z);
 
-    return (quat) {log(l), q.y * arg, q.z * arg, q.w * arg};
+    return (quat) {log(l), q.x * arg, q.y * arg, q.z * arg};
 }
 /// @brief Exponential of a unit quaternion
 /// @param q The quaternion
 /// @return The resulting quaternion
 /// @note The quaternion is supposed to be unit, a.k.a of length 1. This speeds up the computation.
 static inline quat lnQ_Unit(const quat q) {
-    float arg = acos(q.x);
-    return (quat) {0, q.y * arg, q.z * arg, q.w * arg};
+    float arg = acos(q.w);
+    return (quat) {0, q.x * arg, q.y * arg, q.z * arg};
 }
 /// @brief Power of a quaternion
 /// @param q The quaternion
@@ -206,43 +206,43 @@ static inline quat slerpQ_Unit(const quat a, const quat b, float t) {
 
 
 /// @brief Create a quaternion
+/// @param w w component
 /// @param x x component
 /// @param y y component
 /// @param z z component
-/// @param w w component
 /// @return The newly created quaternion
-quat* newQuat(float x, float y, float z, float w);
+quat* newQuat(float w, float x, float y, float z);
 /// @brief Create a quaternion
+/// @param w w component
 /// @param x x component
 /// @param y y component
 /// @param z z component
-/// @param w w component
 /// @return The newly created quaternion
-quat* Quat_(float x, float y, float z, float w);
+quat* Quat_(float w, float x, float y, float z);
 
 /// @brief Set a quaternion
 /// @param q The quaternion to set
+/// @param w The new w component
 /// @param x The new x component
 /// @param y The new y component
 /// @param z The new z component
-/// @param w The new w component
 /// @return The input quaternion
 /// @note This opperation overrides the current value
-quat* setQ_(quat* restrict q, float x, float y, float z, float w);
+quat* setQ_(quat* restrict q, float w, float x, float y, float z);
 /// @brief Set a quaternion from Euler angles
 /// @param q The quaternion to set
-/// @param pitch The angle around X
 /// @param yaw The angle around Y
-/// @param roll The angle around Z
-/// @note Rotations are applied in this order: (pitch, yaw, roll)
+/// @param pitch The angle from the floor
+/// @param roll The angle around ViewAxis
+/// @note Rotations are applied in this order: (roll, pitch, yaw)
 /// @note Thank you wikipedia
 /// @return The input quaternion
 /// @note This opperation overrides the current value
-quat* setQ_Euler_(quat* restrict q, float pitch, float yaw, float roll);
+quat* setQ_Euler_(quat* restrict q, float yaw, float pitch, float roll);
 /// @brief Set a quaternion from Euler angles
 /// @param q The quaternion to set
 /// @param v The Euler angles vector
-/// @note Rotations are applied in this order: (pitch, yaw, roll)
+/// @note Rotations are applied in this order: (roll, pitch, yaw)
 /// @note Thank you wikipedia
 /// @return The input quaternion
 /// @note This opperation overrides the current value
@@ -274,17 +274,17 @@ quat* setQ_FromToVec_(quat* restrict q, const vec3* from, const vec3* to);
 /// @return The newly created quaternion
 quat* newQuat_V(float r, const vec3* i);
 /// @brief Create a quaternion from euler angles
-/// @param pitch The angle around X
 /// @param yaw The angle around Y
-/// @param roll The angle around Z
-/// @return The newly created quaternion
-/// @note Rotations are applied in this order: (pitch, yaw, roll)
+/// @param pitch The angle from the floor
+/// @param roll The angle around ViewAxis
+/// @note Rotations are applied in this order: (roll, pitch, yaw)
 /// @note Thank you wikipedia
-quat* newQuat_Euler(float pitch, float yaw, float roll);
+/// @return The newly created quaternion
+quat* newQuat_Euler(float yaw, float pitch, float roll);
 /// @brief Create a quaternion from euler angles vector
 /// @param v The vector of euler angles
 /// @return The newly created quaternion
-/// @note Rotations are applied in this order: (pitch, yaw, roll)
+/// @note Rotations are applied in this order: (roll, pitch, yaw)
 /// @note Thank you wikipedia
 quat* newQuat_EulerVector(const vec3* v);
 /// @brief Create a quaternion from angle axis
@@ -569,6 +569,7 @@ vec3* quatToVec3_Rot_(const quat* q, vec3* restrict destination);
 /// @param q The quaternion to convert
 /// @param destination Where the result is stored
 /// @note Set destination to NULL for new value
+/// @note Angles are in (roll, pitch, yaw) order
 /// @return The destination value
 vec3* quatToVec3_Euler_(const quat* q, vec3* restrict destination);
 

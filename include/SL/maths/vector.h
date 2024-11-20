@@ -42,7 +42,15 @@
 #define __SL_GEN_argsList3(type) type x, type y, type z
 #define __SL_GEN_argsList4(type) type x, type y, type z, type w
 
+#define __SL_GEN_compList2() x, y
+#define __SL_GEN_compList3() x, y, z
+#define __SL_GEN_compList4() x, y, z, w
+
 #define __SL_GEN_Args_AB(type) type a, type b
+
+#define __SL_GEN_func2(a, func, access) func(a access x), func(a access y)
+#define __SL_GEN_func3(a, func, access) func(a access x), func(a access y), func(a access z)
+#define __SL_GEN_func4(a, func, access) func(a access x), func(a access y), func(a access z), func(a access w)
 
 #define __SL_GEN_binOp2(a, b, s, operator, access) a access x operator b access x s , a access y operator b access y s
 #define __SL_GEN_binOp3(a, b, s, operator, access) a access x operator b access x s , a access y operator b access y s , a access z operator b access z s
@@ -242,130 +250,51 @@ static inline ivec3* crossi3_(const ivec3* a, const ivec3* b, ivec3* c) { if (!c
 
 
 
-#define __SL_GEN_vectorModulo(type, Type, aMin, aMaj, size) \
+#define __SL_GEN_intVector_Specific(type, Type, aMin, aMaj, size) \
     static inline aMin##vec##size mod##aMin##size(__SL_GEN_Args_AB(const aMin##vec##size)) { return aMaj##ec##size(__SL_GEN_binOp##size(a, b,, %, .)); } \
     static inline aMin##vec##size* mod##aMin##size##_(__SL_GEN_Args_AB(const aMin##vec##size*), aMin##vec##size* c) { if (!c) c = malloc(sizeof(aMin##vec##size)); return set##aMin##size##_(c, __SL_GEN_binOp##size(a, b,, %, ->)); } \
     static inline aMin##vec##size* mod##aMin##size##_s(aMin##vec##size* a, const aMin##vec##size* b) { return set##aMin##size##_(a, __SL_GEN_binOp##size(a, b,, %, ->)); }
-#define __SL_GEN_vectorModulos(type, Type, aMin, aMaj) \
-    __SL_GEN_vectorModulo(type, Type, aMin, aMaj, 2) \
-    __SL_GEN_vectorModulo(type, Type, aMin, aMaj, 3) \
-    __SL_GEN_vectorModulo(type, Type, aMin, aMaj, 4)
+#define __SL_GEN_intVector_Specifics(type, Type, aMin, aMaj) \
+    __SL_GEN_intVector_Specific(type, Type, aMin, aMaj, 2) \
+    __SL_GEN_intVector_Specific(type, Type, aMin, aMaj, 3) \
+    __SL_GEN_intVector_Specific(type, Type, aMin, aMaj, 4)
 
-__SL_GEN_vectorModulos(int, Int, i, Iv)
-__SL_GEN_vectorModulos(int64, LongInt, li, Liv)
-__SL_GEN_vectorModulos(uint, Uint, u, Uv)
-__SL_GEN_vectorModulos(uint64, LongUint, lu, Luv)
+__SL_GEN_intVector_Specifics(int, Int, i, Iv)
+__SL_GEN_intVector_Specifics(int64, LongInt, li, Liv)
+__SL_GEN_intVector_Specifics(uint, Uint, u, Uv)
+__SL_GEN_intVector_Specifics(uint64, LongUint, lu, Luv)
 
+#define __SL_GEN_floatVector_Specific(type, Type, aMin, aMaj, size) \
+    static inline aMin##vec##size  floor##aMin##size(const aMin##vec##size v) { return aMaj##ec##size(__SL_GEN_func##size(v, floor, .)); } \
+    static inline aMin##vec##size* floor##aMin##size##_(const aMin##vec##size* v, aMin##vec##size* c) { if (!c) c = malloc(sizeof(aMin##vec##size)); return set##aMin##size##_(c, __SL_GEN_func##size(v, floor, ->)); } \
+    static inline aMin##vec##size* floor##aMin##size##_s(aMin##vec##size* restrict v) { return set##aMin##size##_(v, __SL_GEN_func##size(v, floor, ->)); } \
+    \
+    static inline aMin##vec##size  ceil##aMin##size(const aMin##vec##size v) { return aMaj##ec##size(__SL_GEN_func##size(v, ceil, .)); } \
+    static inline aMin##vec##size* ceil##aMin##size##_(const aMin##vec##size* v, aMin##vec##size* c) { if (!c) c = malloc(sizeof(aMin##vec##size)); return set##aMin##size##_(c, __SL_GEN_func##size(v, ceil, ->)); } \
+    static inline aMin##vec##size* ceil##aMin##size##_s(aMin##vec##size* restrict v) { return set##aMin##size##_(v, __SL_GEN_func##size(v, ceil, ->)); } \
+    \
+    static inline aMin##vec##size  frac##aMin##size(const aMin##vec##size v) { return sub##aMin##size(v, floor##aMin##size(v)); } \
+    static inline aMin##vec##size* frac##aMin##size##_(const aMin##vec##size* v, aMin##vec##size* c) { if (!c) c = malloc(sizeof(aMin##vec##size)); *c = frac##aMin##size(*v); return c; } \
+    static inline aMin##vec##size* frac##aMin##size##_s(aMin##vec##size* restrict v) { *v = frac##aMin##size(*v); return v; } \
+    \
+    static inline aMin##vec##size aMin##vec##size##Unit(__SL_GEN_argsList##size(type)) { return norm##aMin##size(aMaj##ec##size(__SL_GEN_compList##size())); } \
+    static inline aMin##vec##size* aMin##vec##size##Unit_(__SL_GEN_argsList##size(type)) { return norm##aMin##size##_s(aMaj##ec##size##_(__SL_GEN_compList##size())); } \
 
-// Create new unit Vector2
-static inline vec2 vec2Unit(float x, float y) { return norm2(createVec2(x, y)); }
-// Create new unit Vector3
-static inline vec3 vec3Unit(float x, float y, float z) { return norm3(createVec3(x, y, z)); }
-// Create new unit Vector4
-static inline vec4 vec4Unit(float x, float y, float z, float w) { return norm4(createVec4(x, y, z, w)); }
+#define __SL_GEN_floatVector_Specifics(type, Type, aMin, aMaj) \
+    __SL_GEN_floatVector_Specific(type, Type, aMin, aMaj, 2) \
+    __SL_GEN_floatVector_Specific(type, Type, aMin, aMaj, 3) \
+    __SL_GEN_floatVector_Specific(type, Type, aMin, aMaj, 4) \
+    \
+    static inline aMin##vec##2 lerp##aMin##2(const aMin##vec##2 a, const aMin##vec##2 b, type t) { return aMaj##ec##2((b.x - a.x) * t + a.x, (b.y - a.y) * t + a.y); } \
+    static inline aMin##vec##3 lerp##aMin##3(const aMin##vec##3 a, const aMin##vec##3 b, type t) { return aMaj##ec##3((b.x - a.x) * t + a.x, (b.y - a.y) * t + a.y, (b.z - a.z) * t + a.z); } \
+    static inline aMin##vec##4 lerp##aMin##4(const aMin##vec##4 a, const aMin##vec##4 b, type t) { return aMaj##ec##4((b.x - a.x) * t + a.x, (b.y - a.y) * t + a.y, (b.z - a.z) * t + a.z, (b.w - a.w) * t + a.w); } \
+    \
+    static inline aMin##vec##2* lerp##aMin##2_(const aMin##vec##2* a, const aMin##vec##2* b, type t, aMin##vec##2* c) { if (!c) c = malloc(sizeof(aMin##vec##2)); return set##aMin##2_(c, (b->x - a->x) * t + a->x, (b->y - a->y) * t + a->y); } \
+    static inline aMin##vec##3* lerp##aMin##3_(const aMin##vec##3* a, const aMin##vec##3* b, type t, aMin##vec##3* c) { if (!c) c = malloc(sizeof(aMin##vec##3)); return set##aMin##3_(c, (b->x - a->x) * t + a->x, (b->y - a->y) * t + a->y, (b->z - a->z) * t + a->z); } \
+    static inline aMin##vec##4* lerp##aMin##4_(const aMin##vec##4* a, const aMin##vec##4* b, type t, aMin##vec##4* c) { if (!c) c = malloc(sizeof(aMin##vec##4)); return set##aMin##4_(c, (b->x - a->x) * t + a->x, (b->y - a->y) * t + a->y, (b->z - a->z) * t + a->z, (b->w - a->w) * t + a->w); } \
 
-// Create new unit Vector2
-static inline vec2* vec2Unit_(float x, float y) { return norm2_s(newVec2(x, y)); }
-// Create new unit Vector3
-static inline vec3* vec3Unit_(float x, float y, float z) { return norm3_s(newVec3(x, y, z)); }
-// Create new unit Vector4
-static inline vec4* vec4Unit_(float x, float y, float z, float w) { return norm4_s(newVec4(x, y, z, w)); }
-
-
-
-// Create new unit DoubleVector2
-static inline dvec2 dvec2Unit(double x, double y) { return normd2(createDvec2(x, y)); }
-// Create new unit DoubleVector3
-static inline dvec3 dvec3Unit(double x, double y, double z) { return normd3(createDvec3(x, y, z)); }
-// Create new unit DoubleVector2
-static inline dvec4 dvec4Unit(double x, double y, double z, double w) { return normd4(createDvec4(x, y, z, w)); }
-
-// Create new unit DoubleVector2
-static inline dvec2* dvec2Unit_(double x, double y) { return normd2_s(newDvec2(x, y)); }
-// Create new unit DoubleVector3
-static inline dvec3* dvec3Unit_(double x, double y, double z) { return normd3_s(newDvec3(x, y, z)); }
-// Create new unit DoubleVector2
-static inline dvec4* dvec4Unit_(double x, double y, double z, double w) { return normd4_s(newDvec4(x, y, z, w)); }
-
-
-
-/// @brief Linear interpolation between two vec2
-/// @param a The base vector
-/// @param b The destination vector
-/// @param t The parameter in [0, 1] range (can exceed but results might not work as expected)
-/// @return The interpolated vector
-static inline vec2 lerp2(const vec2 a, const vec2 b, float t) { return createVec2((b.x - a.x) * t + a.x, (b.y - a.y) * t + a.y); }
-/// @brief Linear interpolation between two vec3
-/// @param a The base vector
-/// @param b The destination vector
-/// @param t The parameter in [0, 1] range (can exceed but results might not work as expected)
-/// @return The interpolated vector
-static inline vec3 lerp3(const vec3 a, const vec3 b, float t) { return createVec3((b.x - a.x) * t + a.x, (b.y - a.y) * t + a.y, (b.z - a.z) * t + a.z); }
-/// @brief Linear interpolation between two vec4
-/// @param a The base vector
-/// @param b The destination vector
-/// @param t The parameter in [0, 1] range (can exceed but results might not work as expected)
-/// @return The interpolated vector
-static inline vec4 lerp4(const vec4 a, const vec4 b, float t) { return createVec4((b.x - a.x) * t + a.x, (b.y - a.y) * t + a.y, (b.z - a.z) * t + a.z, (b.w - a.w) * t + a.w); }
-
-/// @brief Linear interpolation between two dvec2
-/// @param a The base vector
-/// @param b The destination vector
-/// @param t The parameter in [0, 1] range (can exceed but results might not work as expected)
-/// @return The interpolated vector
-static inline dvec2 lerpd2(const dvec2 a, const dvec2 b, double t) { return createDvec2((b.x - a.x) * t + a.x, (b.y - a.y) * t + a.y); }
-/// @brief Linear interpolation between two dvec3
-/// @param a The base vector
-/// @param b The destination vector
-/// @param t The parameter in [0, 1] range (can exceed but results might not work as expected)
-/// @return The interpolated vector
-static inline dvec3 lerpd3(const dvec3 a, const dvec3 b, double t) { return createDvec3((b.x - a.x) * t + a.x, (b.y - a.y) * t + a.y, (b.z - a.z) * t + a.z); }
-/// @brief Linear interpolation between two dvec4
-/// @param a The base vector
-/// @param b The destination vector
-/// @param t The parameter in [0, 1] range (can exceed but results might not work as expected)
-/// @return The interpolated vector
-static inline dvec4 lerpd4(const dvec4 a, const dvec4 b, double t) { return createDvec4((b.x - a.x) * t + a.x, (b.y - a.y) * t + a.y, (b.z - a.z) * t + a.z, (b.w - a.w) * t + a.w); }
-
-
-
-/// @brief Linear interpolation between two vec2
-/// @param a The base vector
-/// @param b The destination vector
-/// @param t The parameter in [0, 1] range (can exceed but results might not work as expected)
-/// @return The interpolated vector
-static inline vec2* lerp2_(const vec2* a, const vec2* b, float t, vec2* c) { if (!c) c = malloc(sizeof(vec2)); return set2_(c, (b->x - a->x) * t + a->x, (b->y - a->y) * t + a->y); }
-/// @brief Linear interpolation between two vec3
-/// @param a The base vector
-/// @param b The destination vector
-/// @param t The parameter in [0, 1] range (can exceed but results might not work as expected)
-/// @return The interpolated vector
-static inline vec3* lerp3_(const vec3* a, const vec3* b, float t, vec3* c) { if (!c) c = malloc(sizeof(vec3)); return set3_(c, (b->x - a->x) * t + a->x, (b->y - a->y) * t + a->y, (b->z - a->z) * t + a->z); }
-/// @brief Linear interpolation between two vec4
-/// @param a The base vector
-/// @param b The destination vector
-/// @param t The parameter in [0, 1] range (can exceed but results might not work as expected)
-/// @return The interpolated vector
-static inline vec4* lerp4_(const vec4* a, const vec4* b, float t, vec4* c) { if (!c) c = malloc(sizeof(vec4)); return set4_(c, (b->x - a->x) * t + a->x, (b->y - a->y) * t + a->y, (b->z - a->z) * t + a->z, (b->w - a->w) * t + a->w); }
-
-/// @brief Linear interpolation between two dvec2
-/// @param a The base vector
-/// @param b The destination vector
-/// @param t The parameter in [0, 1] range (can exceed but results might not work as expected)
-/// @return The interpolated vector
-static inline dvec2* lerpd2_(const dvec2* a, const dvec2* b, double t, dvec2* c) { if (!c) c = malloc(sizeof(dvec2)); return setd2_(c, (b->x - a->x) * t + a->x, (b->y - a->y) * t + a->y); }
-/// @brief Linear interpolation between two dvec3
-/// @param a The base vector
-/// @param b The destination vector
-/// @param t The parameter in [0, 1] range (can exceed but results might not work as expected)
-/// @return The interpolated vector
-static inline dvec3* lerpd3_(const dvec3* a, const dvec3* b, double t, dvec3* c) { if (!c) c = malloc(sizeof(dvec3)); return setd3_(c, (b->x - a->x) * t + a->x, (b->y - a->y) * t + a->y, (b->z - a->z) * t + a->z); }
-/// @brief Linear interpolation between two dvec4
-/// @param a The base vector
-/// @param b The destination vector
-/// @param t The parameter in [0, 1] range (can exceed but results might not work as expected)
-/// @return The interpolated vector
-static inline dvec4* lerpd4_(const dvec4* a, const dvec4* b, double t, dvec4* c) { if (!c) c = malloc(sizeof(dvec4)); return setd4_(c, (b->x - a->x) * t + a->x, (b->y - a->y) * t + a->y, (b->z - a->z) * t + a->z, (b->w - a->w) * t + a->w); }
+__SL_GEN_floatVector_Specifics(float, Float, , V)
+__SL_GEN_floatVector_Specifics(double, Double, d, Dv)
 
 
 
@@ -418,5 +347,13 @@ static inline vec3* vec3ProjPlane_(const vec3* a, const vec3* n, vec3* c) { retu
 /// @param n The normal of the plane
 /// @return The projected vector
 static inline dvec3* dvec3ProjPlane_(const dvec3* a, const dvec3* n, dvec3* c) { return addSd3_(a, n, -dotd3_(a, n), c); }
+
+static inline vec2 rot2(const vec2 v, float angle) { float c = cos(angle), s = sin(angle); return Vec2(c * v.x - s * v.y, s * v.y + c * v.x); }
+static inline vec2* rot2_(const vec2* v, float angle, vec2* d) { float c = cos(angle), s = sin(angle); return c ? Vec2_(c * v->x - s * v->y, s * v->y + c * v->x) : set2_(d, c * v->x - s * v->y, s * v->y + c * v->x); }
+static inline vec2* rot2_s(vec2* restrict v, float angle) { float c = cos(angle), s = sin(angle); return set2_(v, c * v->x - s * v->y, s * v->y + c * v->x); }
+
+static inline dvec2 rotd2(const dvec2 v, double angle) { double c = cos(angle), s = sin(angle); return Dvec2(c * v.x - s * v.y, s * v.y + c * v.x); }
+static inline dvec2* rotd2_(const dvec2* v, double angle, dvec2* d) { double c = cos(angle), s = sin(angle); return c ? Dvec2_(c * v->x - s * v->y, s * v->y + c * v->x) : setd2_(d, c * v->x - s * v->y, s * v->y + c * v->x); }
+static inline dvec2* rotd2_s(dvec2* restrict v, double angle) { double c = cos(angle), s = sin(angle); return setd2_(v, c * v->x - s * v->y, s * v->y + c * v->x); }
 
 #endif

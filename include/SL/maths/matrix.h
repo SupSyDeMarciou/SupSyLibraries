@@ -282,9 +282,7 @@ mat2x2* newMat2x2_Rotation(float angle);
 mat2x2* identity2x2_();
 
 #define XPD_MAT2X2(x) (x).m[0], (x).m[1], (x).m[2], (x).m[3]
-/// @brief Get the values of a mat2x2 as an array
-/// @param x The matrix
-#define MAT2X2_AS_FLOAT4(x) {XPD_MAT2X2(x)}
+#define XPD_MAT2X2_(x) (x)->m[0], (x)->m[1], (x)->m[2], (x)->m[3]
 
 /// @brief Add two 2x2 matrices
 /// @param a Left matrix
@@ -467,9 +465,7 @@ mat3x3* newMat3x3_Cross(const vec3* v);
 mat3x3* identity3x3_();
 
 #define XPD_MAT3X3(x) (x).m[0], (x).m[1], (x).m[2], (x).m[3], (x).m[4], (x).m[5], (x).m[6], (x).m[7], (x).m[8]
-/// @brief Get the values of a mat3x3 as an array
-/// @param x The matrix
-#define MAT3x3_AS_FLOAT9(x) {XPD_MAT3X3(x)}
+#define XPD_MAT3X3_(x) (x)->m[0], (x)->m[1], (x)->m[2], (x)->m[3], (x)->m[4], (x)->m[5], (x)->m[6], (x)->m[7], (x)->m[8]
 
 /// @brief Add two 3x3 matrices
 /// @param a Left matrix
@@ -602,10 +598,7 @@ mat4x4* identity4x4_();
 #define STATIC_MAT4X4V(values) ((mat4x4){.r = 4, .c = 4, .m = {values[0], values[1], values[2], values[3], values[4], values[5], values[6], values[7], values[8], values[9], values[10], values[11], values[12], values[13], values[14], values[15]}})
 
 #define XPD_MAT4X4(x) (x).m[0], (x).m[1], (x).m[2], (x).m[3], (x).m[4], (x).m[5], (x).m[6], (x).m[7], (x).m[8], (x).m[9], (x).m[10], (x).m[11], (x).m[12], (x).m[13], (x).m[14], (x).m[15]
-/// @brief Get the values of a mat4x4 as an array
-/// @param x The matrix
-#define MAT4X4_AS_FLOAT16(x) {XPD_MAT4X4(x)}
-
+#define XPD_MAT4X4_(x) (x)->m[0], (x)->m[1], (x)->m[2], (x)->m[3], (x)->m[4], (x)->m[5], (x)->m[6], (x)->m[7], (x)->m[8], (x)->m[9], (x)->m[10], (x)->m[11], (x)->m[12], (x)->m[13], (x)->m[14], (x)->m[15]
 
 /// @brief Add two 4x4 matrices
 /// @param a Left matrix
