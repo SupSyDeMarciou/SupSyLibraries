@@ -1,5 +1,5 @@
-#ifndef __SL_UTILS_IMAGE_IMPORTER
-#define __SL_UTILS_IMAGE_IMPORTER
+#ifndef __SL_UTILS_IMAGE_IMPORTER_H__
+#define __SL_UTILS_IMAGE_IMPORTER_H__
 
 #include "../structures.h"
 

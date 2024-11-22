@@ -1,5 +1,5 @@
-#ifndef __SL_UTILS_ARENA_ALLOC
-#define __SL_UTILS_ARENA_ALLOC
+#ifndef __SL_UTILS_ARENA_ALLOC_H__
+#define __SL_UTILS_ARENA_ALLOC_H__
 
 #include <stdlib.h>
 

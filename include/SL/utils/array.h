@@ -1,5 +1,5 @@
-#ifndef __SL_UTILS_ARRAY
-#define __SL_UTILS_ARRAY
+#ifndef __SL_UTILS_ARRAY_H__
+#define __SL_UTILS_ARRAY_H__
 
 #include "../structures.h" 
 
@@ -98,23 +98,17 @@ void* arrayData(array* a);
 /// @param a The array to modify
 /// @param i The index in the array (Positive is relative to 0, Negative is relative to last element)
 /// @param val The value to set
-#define arraySet(a, i, val) do { \
-    typeof(val) VAL__ = val; \
-    if (!arraySet_P(a, i, &VAL__)) failWithError("Cannot set element outside of array count"); \
-} while (false)
+#define arraySet(a, i, val) do { typeof(val) __SL_LIST_TEMP__ = val; if (!arraySet_P(a, i, &__SL_LIST_TEMP__)) failWithError("Cannot set element outside of array count"); } while (false)
 /// @brief Add an element to an array
 /// @param a The array to modify
 /// @param val The value to add
-#define arrayAdd(a, val) do { \
-    typeof(val) VAL__ = val; \
-    (void)arrayAdd_P(a, &VAL__); \
-} while (false)
+#define arrayAdd(a, val) do { typeof(val) __SL_LIST_TEMP__ = val; (void)arrayAdd_P(a, &__SL_LIST_TEMP__); } while (false)
 
 /// @brief Loop over every element in an array
 /// @param array The array
 /// @param type The type of an array element
 /// @param varname The name of the variable holding the current array element
 #define array_foreach(array, type, varname) \
-    for (type *varname = array.data, *end = (type*)(array.data + array.count * array.elemSize); varname < end; varname++)
+    for (type *varname = (array).data, *varname##_end = (type*)((array).data + (size_t)(array).count * (size_t)(array).elemSize); varname < varname##_end; varname++)
 
 #endif

@@ -1,3 +1,6 @@
+#ifndef __SL_UTILS_HASHTABLE_H__
+#define __SL_UTILS_HASHTABLE_H__
+
 #include "../../SL.h"
 
 /// @brief Hash table structure
@@ -51,3 +54,5 @@ bool dictAdd(dict* d, void* key, void* value);
 /// @param out Memory in which the removed element is copied (if non-NULL and an element was found)
 /// @return Wether an element has been removed
 bool dictRemove(dict* d, void* key, void* out);
+
+#endif

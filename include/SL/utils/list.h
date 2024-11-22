@@ -1,5 +1,5 @@
-#ifndef __SL_UTILS_LIST
-#define __SL_UTILS_LIST
+#ifndef __SL_UTILS_LIST_H__
+#define __SL_UTILS_LIST_H__
 
 #include "../structures.h" 
 
@@ -62,7 +62,7 @@ void listAddLast_P(list* list, void* ptrToVal, size_t elemSize);
 /// @brief Add a value at the end of a list
 /// @param list The list in which to add
 /// @param val The value to add
-#define listAddLast(l, val) do { typeof(val) __SGE_LIST_TEMP__ = val; listAddLast_P(l, &__SGE_LIST_TEMP__, sizeof(__SGE_LIST_TEMP__)); } while (false)
+#define listAddLast(l, val) do { typeof(val) __SL_LIST_TEMP__ = val; listAddLast_P(l, &__SL_LIST_TEMP__, sizeof(__SL_LIST_TEMP__)); } while (false)
 /// @brief Add a value at the start of a list
 /// @param list The list in which to add
 /// @param ptrToVal A pointer to the value to add
@@ -71,7 +71,7 @@ void listAddFirst_P(list* list, void* ptrToVal, size_t elemSize);
 /// @brief Add a value at the start of a list
 /// @param list The list in which to add
 /// @param val The value to add
-#define listAddFirst(l, val) do { typeof(val) __SGE_LIST_TEMP__ = val; listAddFirst_P(l, &__SGE_LIST_TEMP__, sizeof(__SGE_LIST_TEMP__)); } while (false)
+#define listAddFirst(l, val) do { typeof(val) __SL_LIST_TEMP__ = val; listAddFirst_P(l, &__SL_LIST_TEMP__, sizeof(__SL_LIST_TEMP__)); } while (false)
 /// @brief Add a value at a specific position in a list
 /// @param list The list in which to add
 /// @param ptrToVal A pointer to the value to add
@@ -81,7 +81,7 @@ void listInsert_P(list* list, void* ptrToVal, size_t elemSize, uint idx);
 /// @brief Add a value at the start of a list
 /// @param list The list in which to add
 /// @param val The value to add
-#define listInsert(l, val, idx) do { typeof(val) __SGE_LIST_TEMP__ = val; listInsert_P(l, &__SGE_LIST_TEMP__, sizeof(__SGE_LIST_TEMP__), idx); } while (false)
+#define listInsert(l, val, idx) do { typeof(val) __SL_LIST_TEMP__ = val; listInsert_P(l, &__SL_LIST_TEMP__, sizeof(__SL_LIST_TEMP__), idx); } while (false)
 
 /// @brief Get the value at index i in a list
 /// @param list The list in which to search

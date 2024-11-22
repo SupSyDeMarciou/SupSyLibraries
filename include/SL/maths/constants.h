@@ -1,5 +1,5 @@
-#ifndef __SL_MATHS_CONSTANTS
-#define __SL_MATHS_CONSTANTS
+#ifndef __SL_MATHS_CONSTANTS_H__
+#define __SL_MATHS_CONSTANTS_H__
 
 /// @brief The ratio of the circumference to the diameter
 #define PI 3.1415926535897931

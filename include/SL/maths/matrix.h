@@ -1,5 +1,5 @@
-#ifndef __SL_MATHS_MATRIX
-#define __SL_MATHS_MATRIX
+#ifndef __SL_MATHS_MATRIX_H__
+#define __SL_MATHS_MATRIX_H__
 
 #include "vector.h"
 #include "quaternion.h"
@@ -7,7 +7,7 @@
 #include "../utils/inout.h"
 
 // Undefine this macro to remove bounds checks
-#define __SL_MATHS_MATRIX_SAFE
+#define SL_MATHS_MATRIX_SAFE
 
 
 

@@ -1,5 +1,5 @@
-#ifndef __SL_MATHS_VECTOR
-#define __SL_MATHS_VECTOR
+#ifndef __SL_MATHS_VECTOR_H__
+#define __SL_MATHS_VECTOR_H__
 
 #include <math.h>
 #include "constants.h"
@@ -36,6 +36,20 @@
 #define FMT_BVEC2 "(%u, %u)"
 #define FMT_BVEC3 "(%u, %u, %u)"
 #define FMT_BVEC4 "(%u, %u, %u, %u)"
+
+#define func2(v, f) Vec2(f(v.x), f(v.y))
+#define func3(v, f) Vec3(f(v.x), f(v.y), f(v.z))
+#define func4(v, f) Vec4(f(v.x), f(v.y), f(v.z), f(v.w))
+
+#define func2_(v, f, c) (c ? set2_(c, f(v.x), f(v.y)) : Vec2_(f(v.x), f(v.y)))
+#define func3_(v, f, c) (c ? set3_(c, f(v.x), f(v.y), f(v.z)) : Vec3_(f(v.x), f(v.y), f(v.z)))
+#define func4_(v, f, c) (c ? set4_(c, f(v.x), f(v.y), f(v.z), f(v.w)) : Vec4_(f(v.x), f(v.y), f(v.z), f(v.w)))
+
+#define func2_s(v, f) (set2_(v, f(v.x), f(v.y)))
+#define func3_s(v, f) (set3_(v, f(v.x), f(v.y), f(v.z)))
+#define func4_s(v, f) (set4_(v, f(v.x), f(v.y), f(v.z), f(v.w)))
+
+
 
 #include <stdlib.h>
 #define __SL_GEN_argsList2(type) type x, type y

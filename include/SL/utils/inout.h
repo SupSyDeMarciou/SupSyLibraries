@@ -1,5 +1,5 @@
-#ifndef __SL_UTILS_INOUT
-#define __SL_UTILS_INOUT
+#ifndef __SL_UTILS_INOUT_H__
+#define __SL_UTILS_INOUT_H__
 
 #include <stdarg.h>
 #include <stdio.h>

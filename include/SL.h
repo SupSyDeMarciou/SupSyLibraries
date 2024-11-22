@@ -1,5 +1,5 @@
-#ifndef __SUPSY_SL
-#define __SUPSY_SL
+#ifndef __SL_H__
+#define __SL_H__
 
 #include "SL/structures.h"
 
@@ -12,7 +12,6 @@
 #include "SL/utils/inout.h"
 #include "SL/utils/list.h"
 #include "SL/utils/array.h"
-#include "SL/utils/debug.h"
 #include "SL/utils/imageImporter.h"
 #include "SL/utils/arenaAlloc.h"
 #include "SL/utils/hashtbl.h"

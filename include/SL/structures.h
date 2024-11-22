@@ -1,5 +1,5 @@
-#ifndef __SL_STRUCTURES
-#define __SL_STRUCTURES
+#ifndef __SL_STRUCTURES_H__
+#define __SL_STRUCTURES_H__
 
 #include <stdint.h>
 #include <stdbool.h>
