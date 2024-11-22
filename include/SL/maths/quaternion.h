@@ -568,9 +568,10 @@ vec3* quatToVec3_Rot_(const quat* q, vec3* restrict destination);
 /// @brief Convert quaterion to euler angles
 /// @param q The quaternion to convert
 /// @param destination Where the result is stored
+/// @return The destination value
 /// @note Set destination to NULL for new value
 /// @note Angles are in (roll, pitch, yaw) order
-/// @return The destination value
+/// @note Base on this paper: https://pmc.ncbi.nlm.nih.gov/articles/PMC9648712/
 vec3* quatToVec3_Euler_(const quat* q, vec3* restrict destination);
 
 #endif
