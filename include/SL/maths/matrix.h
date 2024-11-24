@@ -413,7 +413,7 @@ mat3x3* set3x3_Euler_(mat3x3* restrict m, float yaw, float pitch, float roll);
 /// @brief Set a mat3x3 from Euler vector
 /// @param m The matrix to set
 /// @param v The Euler vector
-/// @note Rotations are applied in this order: (pitch, yaw, roll)
+/// @note Rotations are applied in this order: (yaw, pitch, roll)
 /// @note Thank you wikipedia
 /// @return The input matrix
 /// @note This opperation overrides the current value
@@ -430,6 +430,13 @@ mat3x3* set3x3_RotVec_(mat3x3* restrict m, const vec3* v);
 /// @return The input matrix
 /// @note This opperation overrides the current value
 mat3x3* set3x3_Cross_(mat3x3* restrict m, const vec3* v);
+/// @brief Set a mat3x3 from normal transform
+/// @param m The matrix to set
+/// @param q The rotation
+/// @param s The scale
+/// @return The input matrix
+/// @note This opperation overrides the current value
+mat3x3* set3x3_TransformNormal_(mat3x3* m, const quat* q, const vec3* s);
 
 /// @brief Create a new mat3x3 from Euler angles
 /// @param m The matrix to set
