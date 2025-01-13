@@ -9,6 +9,10 @@
 #define XPD_VEC3(v) v.x, v.y, v.z
 #define XPD_VEC4(v) v.x, v.y, v.z, v.w
 
+#define XPD_VEC2_(v) v->x, v->y
+#define XPD_VEC3_(v) v->x, v->y, v->z
+#define XPD_VEC4_(v) v->x, v->y, v->z, v->w
+
 #define FMT_VEC2 "(%f, %f)"
 #define FMT_VEC3 "(%f, %f, %f)"
 #define FMT_VEC4 "(%f, %f, %f, %f)"
@@ -157,7 +161,7 @@
     static inline aMin##vec##size* refl##aMin##size##_s (aMin##vec##size* a, const aMin##vec##size* b)                          { return addS##aMin##size##_s(a, b, -2.0 * dot##aMin##size##_(a, b) / len##aMin##size##_Sqrd_(a)); }
 
 #define __SL_GEN_generateVector_Type(type, Type, aMin, aMaj) \
-    typedef struct Type##Vector2 { type x, y; } aMin##vec2; /* @brief 2D Integer Vector (x, y) */ \
+    typedef struct Type##Vector2 { union {struct {type x, y;}; struct {type r, g;}; struct {type u, v;}; type m[2];}; } aMin##vec2; \
     extern const aMin##vec2 aMin##vec2_right; \
     extern const aMin##vec2 aMin##vec2_left; \
     extern const aMin##vec2 aMin##vec2_up; \
@@ -170,7 +174,7 @@
     static inline aMin##vec2 aMin##vec2One(type s) { return aMaj##ec2(s, s); } \
     static inline aMin##vec2* aMin##vec2One_(type s) { return new##aMaj##ec2(s, s); } \
     \
-    typedef struct Type##Vector3 { type x, y, z; } aMin##vec3; \
+    typedef struct Type##Vector3 { union {struct {type x, y, z;}; struct {type r, g, b;}; struct {type u, v, s;}; type m[3];}; } aMin##vec3; \
     extern const aMin##vec3 aMin##vec3_right; \
     extern const aMin##vec3 aMin##vec3_left; \
     extern const aMin##vec3 aMin##vec3_up; \
@@ -185,7 +189,7 @@
     static inline aMin##vec3 aMin##vec3One(type s) { return aMaj##ec3(s, s, s); } \
     static inline aMin##vec3* aMin##vec3One_(type s) { return new##aMaj##ec3(s, s, s); } \
     \
-    typedef struct Type##Vector4 { type x, y, z, w; } aMin##vec4; \
+    typedef struct Type##Vector4 { union {struct {type x, y, z, w;}; struct {type r, g, b, a;}; struct {type u, v, s, t;}; type m[4];}; } aMin##vec4; \
     extern const aMin##vec4 aMin##vec4_zero; \
     extern const aMin##vec4 aMin##vec4_one; \
     __SL_GEN_generateVector_Generic_STRUCT(type, Type, aMin, aMaj, 4) \
