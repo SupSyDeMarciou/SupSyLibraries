@@ -3,43 +3,15 @@
 
 #include "../structures.h" 
 
-/*
-    Node: {
-        sizeof(void*) : pointer to next node
-        elemSize : actual value
-    }
-*/ 
-/// @brief Type of a node in a list. The data can be accessed with the "n_"
-typedef void list_node;
-#define n_next(node) (*(void**)(node)) /// @brief Get pointer to next node
-#define n_elem_p(type, node) ((type*)((size_t)(node) + sizeof(list_node*))) /// @brief Get pointer to value in node
-#define n_elem(type, node) (*(type*)((size_t)(node) + sizeof(list_node*))) /// @brief Get pointer to value in node
-/// @brief Free a list node
-/// @param toFree The node to free
-/// @warning Use on the returned values of listPop
-void freeListNode(list_node* toFree);
-
+extern void* __SL_TEMP_NODE_STATIC__;
 typedef struct List {
-    list_node* first;
-    list_node* last;
+    void* first;
+    void* last;
     uint count;
 } list;
 
-/// @brief Iterate over every element of a list
-/// @param l The list to iterate through
-/// @param type The type of the elements in the list
-/// @param varname The name of the variable containing a pointer to the value at the current iteration
-/// @param code The code to run for each node in the list
-#define list_foreach_t(l, type, varname) if ((l)->first) for ( \
-    type* varname = n_elem_p(type, (l)->first), *varname##_NODE = (l)->first, *varname##_NODE_TEMP = n_next(varname##_NODE); \
-    varname##_NODE != NULL; \
-    varname##_NODE = varname##_NODE_TEMP, varname##_NODE_TEMP = varname##_NODE ? n_next(varname##_NODE) : NULL, varname = varname##_NODE ? n_elem_p(type, varname##_NODE) : NULL \
-)
-/// @brief Iterate over every element of a list
-/// @param list The list to iterate through
-/// @param varname The name of the variable containing a pointer to the value at the current iteration
-/// @param code The code to run for each node in the list
-#define list_foreach(l, varname) list_foreach_t(l, void, varname)
+#define list_node(type) struct { void* next; type value; }
+#define as_list_node(type, node) ((list_node(type)*)node)
 
 /// @brief Create a new chained list ON STACK
 /// @return The newly created list
@@ -54,57 +26,100 @@ void destroyList(list toDestroy);
 /// @param toFree The list to free
 void freeList(list* toFree);
 
-/// @brief Add a value at the end of a list
-/// @param list The list in which to add
-/// @param ptrToVal A pointer to the value to add
-/// @param elemSize The size of the element to add
-void listAddLast_P(list* list, void* ptrToVal, size_t elemSize);
-/// @brief Add a value at the end of a list
-/// @param list The list in which to add
-/// @param val The value to add
-#define listAddLast(l, val) do { typeof(val) __SL_LIST_TEMP__ = val; listAddLast_P(l, &__SL_LIST_TEMP__, sizeof(__SL_LIST_TEMP__)); } while (false)
-/// @brief Add a value at the start of a list
-/// @param list The list in which to add
-/// @param ptrToVal A pointer to the value to add
-/// @param elemSize The size of the element to add
-void listAddFirst_P(list* list, void* ptrToVal, size_t elemSize);
-/// @brief Add a value at the start of a list
-/// @param list The list in which to add
-/// @param val The value to add
-#define listAddFirst(l, val) do { typeof(val) __SL_LIST_TEMP__ = val; listAddFirst_P(l, &__SL_LIST_TEMP__, sizeof(__SL_LIST_TEMP__)); } while (false)
-/// @brief Add a value at a specific position in a list
-/// @param list The list in which to add
-/// @param ptrToVal A pointer to the value to add
-/// @param elemSize The size of the element to add
-/// @param idx The position in which to insert
-void listInsert_P(list* list, void* ptrToVal, size_t elemSize, uint idx);
-/// @brief Add a value at the start of a list
-/// @param list The list in which to add
-/// @param val The value to add
-#define listInsert(l, val, idx) do { typeof(val) __SL_LIST_TEMP__ = val; listInsert_P(l, &__SL_LIST_TEMP__, sizeof(__SL_LIST_TEMP__), idx); } while (false)
+/// @brief Free a list node
+/// @param toFree The node to free
+/// @warning Use on the returned values of listPop ONLY
+void freeListNode(void* toFree);
 
+/// @brief Get first value in list
+/// @param l The list
+/// @param type The type of the value
+#define listFirst(l, type) as_list_node(type, (l)->first)
+/// @brief Get Last value in list
+/// @param l The list
+/// @param type The type of the value
+#define listLast(l, type) as_list_node(type, (l)->last)
+
+void __SL_listAddNode_Last(list* l, void* node);
+/// @brief Add a value at the end of a list
+/// @param l The list
+/// @param val The value to add
+#define listAddLast(l, val) do { \
+    list_node(typeof(val))* __SL_TEMP_NODE__ = malloc(sizeof(*__SL_TEMP_NODE__)); \
+    *__SL_TEMP_NODE__ = (typeof(*__SL_TEMP_NODE__)){.next = NULL, .value = val}; \
+    __SL_listAddNode_Last(l, __SL_TEMP_NODE__); \
+} while (0)
+
+void __SL_listAddNode_First(list* l, void* node);
+/// @brief Add a value at the start of a list
+/// @param l The list
+/// @param val The value to add
+#define listAddFirst(l, val) do { \
+    list_node(typeof(val))* __SL_TEMP_NODE__ = malloc(sizeof(*__SL_TEMP_NODE__)); \
+    *__SL_TEMP_NODE__ = (typeof(*__SL_TEMP_NODE__)){.next = NULL, .value = val}; \
+    __SL_listAddNode_First(l, __SL_TEMP_NODE__); \
+} while (0)
+
+void __SL_listInsertNode(list* l, void* node_, uint i);
+/// @brief Insert a value at specified index in a list
+/// @param l The list
+/// @param val The value to insert
+/// @param index The index at which to insert the value
+#define listInsert(l, val, index) do { \
+    list_node(typeof(val))* __SL_TEMP_NODE__ = malloc(sizeof(*__SL_TEMP_NODE__)); \
+    *__SL_TEMP_NODE__ = (typeof(*__SL_TEMP_NODE__)){.next = NULL, .value = val}; \
+    __SL_listInsertNode(l, __SL_TEMP_NODE__, index); \
+} while (0)
+
+void* __SL_listGetNode(list* l, uint i);
 /// @brief Get the value at index i in a list
-/// @param list The list in which to search
-/// @param i The index of the researched element
-/// @return The desired value if i is in bounds, NULL otherwise
-void* listGet_P(list* list, uint i);
-/// @brief Get the value at index i in a list
-/// @param l The list in which to search
+/// @param l The list
 /// @param type The type of the element to get
-/// @param i The index of the researched element
+/// @param index The index of the researched element
 /// @return The desired value if i is in bounds, NULL otherwise
-#define listGet(l, type, idx) ((type*)listGet_P(l, idx))
+#define listGet(l, type, index) (__SL_TEMP_NODE_STATIC__ = __SL_listGetNode(l, index), __SL_TEMP_NODE_STATIC__ ? &as_list_node(type, __SL_TEMP_NODE_STATIC__)->value : (type*)NULL)
 
 /// @brief Disconnect the i-th node of a list and return it
-/// @param list The list to modify
-/// @param i The place of the node to disconnect in the list
+/// @param l The list
+/// @param index The place of the node to disconnect in the list
 /// @return The disconnected node or NULL if i is out of bounds 
-list_node* listPop(list* list, uint i);
+/// @note Consider using "listPopInto" instead
+/// @warning This node's memory is now YOUR PROBLEM, do not forget to deallocate it!
+void* __SL_listPopNode(list* l, uint index);
+/// @brief Disconnect the i-th node of a list and return it
+/// @param l The list
+/// @param index The place of the node to disconnect in the list
+/// @return The disconnected node or NULL if i is out of bounds
+/// @note Consider using "listPopInto" instead
+/// @warning This node's memory is now YOUR PROBLEM, do not forget to deallocate it!
+#define listPopNode(l, type, index) as_list_node(type, __SL_listPopNode(l, index))
 
-/// @brief Remove the i-th element of a list
-/// @param list The list to modify
-/// @param i The place of the element to remove in the list
-/// @return Wether an elemnt was removed
-bool listRemove(list* list, uint i);
+/// @brief Remove value at index from list and store it into a variable
+/// @param l The list
+/// @param index The place of the value to pop from the list
+/// @param varname The variable in which to store the popped value
+#define listPopInto(l, index, varname) do { \
+    list_node(typeof(varname))* __SL_TEMP_NODE___ = __SL_listPopNode(l, index); \
+    if (__SL_TEMP_NODE___) varname = __SL_TEMP_NODE__->value; \
+    freeNode(__SL_TEMP_NODE__); \
+} while(0)
+
+/// @brief Remove value at index from list
+/// @param l The list
+/// @param index The place of the value to remove from the list
+bool listRemove(list* l, uint index);
+
+#define __SL_list_foreach_t(type, varname, l) if ((l)->first) for ( \
+    type* varname = (void*)&as_list_node(void*, (l)->first)->value, *varname##_NODE = (l)->first; \
+    varname##_NODE; \
+    varname##_NODE = as_list_node(void*, varname##_NODE)->next, varname = varname##_NODE ? (void*)&as_list_node(void*, varname##_NODE)->value : NULL \
+)
+/// @brief Iterate over every element in a list
+/// @param type The type of the elements in the list
+/// @param VARNAME_in_LIST Should litteraly the name of the variable used to iterate followed by "in" then the name of the list
+#define list_foreach_t(type, VARNAME_in_LIST) __SL_list_foreach_t(type, VARNAME_in_LIST)
+/// @brief Iterate over every element in a list
+/// @param VARNAME_in_LIST Should litteraly the name of the variable used to iterate followed by "in" then the name of the list
+#define list_foreach(VARNAME_in_LIST) __SL_list_foreach_t(void, VARNAME_in_LIST)
 
 #endif

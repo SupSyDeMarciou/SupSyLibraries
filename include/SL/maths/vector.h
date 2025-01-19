@@ -41,17 +41,17 @@
 #define FMT_BVEC3 "(%u, %u, %u)"
 #define FMT_BVEC4 "(%u, %u, %u, %u)"
 
-#define func2(v, f) Vec2(f(v.x), f(v.y))
-#define func3(v, f) Vec3(f(v.x), f(v.y), f(v.z))
-#define func4(v, f) Vec4(f(v.x), f(v.y), f(v.z), f(v.w))
+#define func2(v, f) ((typeof(v)){f(v.x), f(v.y)})
+#define func3(v, f) ((typeof(v)){f(v.x), f(v.y), f(v.z)})
+#define func4(v, f) ((typeof(v)){f(v.x), f(v.y), f(v.z), f(v.w)})
 
-#define func2_(v, f, c) (c ? set2_(c, f(v.x), f(v.y)) : Vec2_(f(v.x), f(v.y)))
-#define func3_(v, f, c) (c ? set3_(c, f(v.x), f(v.y), f(v.z)) : Vec3_(f(v.x), f(v.y), f(v.z)))
-#define func4_(v, f, c) (c ? set4_(c, f(v.x), f(v.y), f(v.z), f(v.w)) : Vec4_(f(v.x), f(v.y), f(v.z), f(v.w)))
+#define func2_(v, f, c) (c ? set2_(c, f(v->x), f(v->y)) : Vec2_(f(v->x), f(v->y)))
+#define func3_(v, f, c) (c ? set3_(c, f(v->x), f(v->y), f(v->z)) : Vec3_(f(v->x), f(v->y), f(v->z)))
+#define func4_(v, f, c) (c ? set4_(c, f(v->x), f(v->y), f(v->z), f(v->w)) : Vec4_(f(v->x), f(v->y), f(v->z), f(v->w)))
 
-#define func2_s(v, f) (set2_(v, f(v.x), f(v.y)))
-#define func3_s(v, f) (set3_(v, f(v.x), f(v.y), f(v.z)))
-#define func4_s(v, f) (set4_(v, f(v.x), f(v.y), f(v.z), f(v.w)))
+#define func2_s(v, f) (set2_(v, f(v->x), f(v->y)))
+#define func3_s(v, f) (set3_(v, f(v->x), f(v->y), f(v->z)))
+#define func4_s(v, f) (set4_(v, f(v->x), f(v->y), f(v->z), f(v->w)))
 
 
 
@@ -118,7 +118,7 @@
     static inline aMin##vec##size addSM##aMin##size (__SL_GEN_Args_AB(const aMin##vec##size), type s, aMin##vec##size m)        { return (aMin##vec##size) {__SL_GEN_ternOp##size(a, b, m, * s, +, *, .)}; } \
     static inline aMin##vec##size min##aMin##size (__SL_GEN_Args_AB(const aMin##vec##size))                                     { return (aMin##vec##size) {__SL_GEN_minmax##size(a, b, <, .)}; } \
     static inline aMin##vec##size max##aMin##size (__SL_GEN_Args_AB(const aMin##vec##size))                                     { return (aMin##vec##size) {__SL_GEN_minmax##size(a, b, >, .)}; } \
-    static inline aMin##vec##size refl##aMin##size (__SL_GEN_Args_AB(const aMin##vec##size))                                    { return addS##aMin##size(a, b, -2.0 * dot##aMin##size(a, b) / len##aMin##size##_Sqrd(a)); }
+    static inline aMin##vec##size refl##aMin##size (__SL_GEN_Args_AB(const aMin##vec##size))                                    { return addS##aMin##size(a, b, -2.0 * dot##aMin##size(a, b) / len##aMin##size##_Sqrd(b)); }
 
 #define __SL_GEN_generateVector_Generic_POINTER_EXT(type, Type, aMin, aMaj, size) \
     static inline aMin##vec##size* new##aMaj##ec##size (__SL_GEN_argsList##size(type))                                          { aMin##vec##size* v = malloc(sizeof(aMin##vec##size)); *v = (aMin##vec##size) {__SL_GEN_argsList##size()}; return v; } \
@@ -144,7 +144,7 @@
     static inline aMin##vec##size* addSM##aMin##size##_ (__SL_GEN_Args_AB(const aMin##vec##size*), type s, const aMin##vec##size* m, aMin##vec##size* c)    { if(!c) c = malloc(sizeof(aMin##vec##size)); *c = (aMin##vec##size) {__SL_GEN_ternOp##size(a, b, m, * s, +, *, ->)}; return c; } \
     static inline aMin##vec##size* min##aMin##size##_ (__SL_GEN_Args_AB(const aMin##vec##size*), aMin##vec##size* c)            { if(!c) c = malloc(sizeof(aMin##vec##size)); *c = (aMin##vec##size) {__SL_GEN_minmax##size(a, b, <, ->)}; return c; } \
     static inline aMin##vec##size* max##aMin##size##_ (__SL_GEN_Args_AB(const aMin##vec##size*), aMin##vec##size* c)            { if(!c) c = malloc(sizeof(aMin##vec##size)); *c = (aMin##vec##size) {__SL_GEN_minmax##size(a, b, >, ->)}; return c; } \
-    static inline aMin##vec##size* refl##aMin##size##_ (__SL_GEN_Args_AB(const aMin##vec##size*), aMin##vec##size* c)           { return addS##aMin##size##_(a, b, -2.0 * dot##aMin##size##_(a, b) / len##aMin##size##_Sqrd_(a), c); }
+    static inline aMin##vec##size* refl##aMin##size##_ (__SL_GEN_Args_AB(const aMin##vec##size*), aMin##vec##size* c)           { return addS##aMin##size##_(a, b, -2.0 * dot##aMin##size##_(a, b) / len##aMin##size##_Sqrd_(b), c); }
 
 #define __SL_GEN_generateVector_Generic_POINTER_SELF(type, Type, aMin, aMaj, size) \
     static inline aMin##vec##size* add##aMin##size##_s (aMin##vec##size* a, const aMin##vec##size* b)                           { *a = (aMin##vec##size) {__SL_GEN_binOp##size(a, b,, +, ->)}; return a; } \
@@ -158,7 +158,7 @@
     static inline aMin##vec##size* addSM##aMin##size##_s (aMin##vec##size* a, const aMin##vec##size* b, type s, const aMin##vec##size* m)                   { *a = (aMin##vec##size) {__SL_GEN_ternOp##size(a, b, m, * s, +, *, ->)}; return a; } \
     static inline aMin##vec##size* min##aMin##size##_s (aMin##vec##size* a, const aMin##vec##size* b)                           { *a = (aMin##vec##size) {__SL_GEN_minmax##size(a, b, <, ->)}; return a; } \
     static inline aMin##vec##size* max##aMin##size##_s (aMin##vec##size* a, const aMin##vec##size* b)                           { *a = (aMin##vec##size) {__SL_GEN_minmax##size(a, b, >, ->)}; return a; } \
-    static inline aMin##vec##size* refl##aMin##size##_s (aMin##vec##size* a, const aMin##vec##size* b)                          { return addS##aMin##size##_s(a, b, -2.0 * dot##aMin##size##_(a, b) / len##aMin##size##_Sqrd_(a)); }
+    static inline aMin##vec##size* refl##aMin##size##_s (aMin##vec##size* a, const aMin##vec##size* b)                          { return addS##aMin##size##_s(a, b, -2.0 * dot##aMin##size##_(a, b) / len##aMin##size##_Sqrd_(b)); }
 
 #define __SL_GEN_generateVector_Type(type, Type, aMin, aMaj) \
     typedef struct Type##Vector2 { union {struct {type x, y;}; struct {type r, g;}; struct {type u, v;}; type m[2];}; } aMin##vec2; \
@@ -239,10 +239,6 @@ __SL_GEN_generateConvert_Full(li, Liv, d, Dv, i, Iv, , V, u, Uv, lu, Luv, b, Bv)
 __SL_GEN_generateConvert_Full(u, Uv, d, Dv, i, Iv, li, Liv, , V, lu, Luv, b, Bv)
 __SL_GEN_generateConvert_Full(lu, Luv, d, Dv, i, Iv, li, Liv, u, Uv, , V, b, Bv)
 __SL_GEN_generateConvert_Full(b, Bv, d, Dv, i, Iv, li, Liv, u, Uv, lu, Luv, , V)
-
-#define vec2At(v, i) (*((void*)&(v) + i * (sizeof(v) / 2)))
-#define vec3At(v, i) (*((void*)&(v) + i * (sizeof(v) / 3)))
-#define vec4At(v, i) (*((void*)&(v) + i * (sizeof(v) / 4)))
 
 
 
@@ -337,12 +333,22 @@ vec4 slerp4(vec4 a, vec4 b, float t);
 
 
 
-/// @brief Generate a uniformly distributed unit vec2
+/// @brief Generate a uniformly distributed vec2
 /// @return The generated vec2
 vec2 rand2();
-/// @brief Generate a uniformly distributed unit vec3
+/// @brief Generate a uniformly distributed vec3
 /// @return The generated vec3
 vec3 rand3();
+/// @brief Generate a uniformly distributed vec4
+/// @return The generated vec4
+vec4 rand4();
+
+/// @brief Generate a uniformly distributed unit vec2
+/// @return The generated vec2
+vec2 rand2_Unit();
+/// @brief Generate a uniformly distributed unit vec3
+/// @return The generated vec3
+vec3 rand3_Unit();
 
 /// @brief Project a vec3 on a plane
 /// @param a The vector to project
@@ -366,12 +372,12 @@ static inline vec3* vec3ProjPlane_(const vec3* a, const vec3* n, vec3* c) { retu
 /// @return The projected vector
 static inline dvec3* dvec3ProjPlane_(const dvec3* a, const dvec3* n, dvec3* c) { return addSd3_(a, n, -dotd3_(a, n), c); }
 
-static inline vec2 rot2(const vec2 v, float angle) { float c = cos(angle), s = sin(angle); return Vec2(c * v.x - s * v.y, s * v.y + c * v.x); }
-static inline vec2* rot2_(const vec2* v, float angle, vec2* d) { float c = cos(angle), s = sin(angle); return c ? Vec2_(c * v->x - s * v->y, s * v->y + c * v->x) : set2_(d, c * v->x - s * v->y, s * v->y + c * v->x); }
-static inline vec2* rot2_s(vec2* restrict v, float angle) { float c = cos(angle), s = sin(angle); return set2_(v, c * v->x - s * v->y, s * v->y + c * v->x); }
+static inline vec2 rot2(const vec2 v, float angle) { float c = cos(angle), s = sin(angle); return Vec2(c * v.x - s * v.y, c * v.y + s * v.x); }
+static inline vec2* rot2_(const vec2* v, float angle, vec2* d) { float c = cos(angle), s = sin(angle); return c ? Vec2_(c * v->x - s * v->y, c * v->y + s * v->x) : set2_(d, c * v->x - s * v->y, c * v->y + s * v->x); }
+static inline vec2* rot2_s(vec2* restrict v, float angle) { float c = cos(angle), s = sin(angle); return set2_(v, c * v->x - s * v->y, c * v->y + s * v->x); }
 
-static inline dvec2 rotd2(const dvec2 v, double angle) { double c = cos(angle), s = sin(angle); return Dvec2(c * v.x - s * v.y, s * v.y + c * v.x); }
-static inline dvec2* rotd2_(const dvec2* v, double angle, dvec2* d) { double c = cos(angle), s = sin(angle); return c ? Dvec2_(c * v->x - s * v->y, s * v->y + c * v->x) : setd2_(d, c * v->x - s * v->y, s * v->y + c * v->x); }
-static inline dvec2* rotd2_s(dvec2* restrict v, double angle) { double c = cos(angle), s = sin(angle); return setd2_(v, c * v->x - s * v->y, s * v->y + c * v->x); }
+static inline dvec2 rotd2(const dvec2 v, double angle) { double c = cos(angle), s = sin(angle); return Dvec2(c * v.x - s * v.y, c * v.y + s * v.x); }
+static inline dvec2* rotd2_(const dvec2* v, double angle, dvec2* d) { double c = cos(angle), s = sin(angle); return c ? Dvec2_(c * v->x - s * v->y, c * v->y + s * v->x) : setd2_(d, c * v->x - s * v->y, c * v->y + s * v->x); }
+static inline dvec2* rotd2_s(dvec2* restrict v, double angle) { double c = cos(angle), s = sin(angle); return setd2_(v, c * v->x - s * v->y, c * v->y + s * v->x); }
 
 #endif

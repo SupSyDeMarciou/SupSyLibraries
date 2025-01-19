@@ -18,4 +18,7 @@
 
 #define ALWAYS_INLINE inline __attribute__((always_inline))
 
+/// @brief Just for synthaxic purposes, may conflict with some libs
+#define IN ,
+
 #endif

@@ -15,5 +15,6 @@
 #include "SL/utils/imageImporter.h"
 #include "SL/utils/arenaAlloc.h"
 #include "SL/utils/hashtbl.h"
+#include "SL/utils/argument.h"
 
 #endif

@@ -3,6 +3,8 @@
 
 #include "../structures.h"
 #include "constants.h"
+#include <math.h>
+
 
 /// @brief Minimum of two doubles
 /// @param a First value
@@ -40,6 +42,12 @@ static inline double SL_lerp(double a, double b, float t) {
 static inline double SL_interpolateQuadratic(double t) {
     return t * t * (3.0 - 2.0 * t);
 }
+/// @brief Get fractionnal part
+/// @param f The value
+/// @return The fractionnal part
+static inline double SL_fract(double f) {
+    return f - floor(f);
+}
 
 /// @brief Hash a uint32 using PCG Hash
 /// @param i The value to hash
@@ -61,4 +69,25 @@ float SL_randFloat();
 /// @param n The int to inspect
 /// @return The closest power of two above n
 uint SL_closestPow2(uint n);
+
+
+
+#include "vector.h"
+
+float hash21(vec2 p);
+float hash31(vec3 p);
+
+vec2 hash22(vec2 v);
+vec3 hash33(vec3 v);
+
+vec2 hash2Unit2(vec2 v);
+vec3 hash3Unit3(vec3 v);
+
+float SL_noise2D_voronoi(vec2 p);
+float SL_noise3D_voronoi(vec3 p);
+
+float SL_noise2D_perlin(vec2 p);
+float SL_noise3D_perlin(vec3 p);
+
+
 #endif

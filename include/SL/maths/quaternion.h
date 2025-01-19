@@ -5,8 +5,11 @@
 
 /// @brief Quaternion (w, x, y, z) = w + ix + jy + kz
 /// @note where i² = j² = k² = ijk = -1
-typedef struct Quaternion {
-    float w, x, y, z;
+typedef union Quaternion {
+    struct { float w, x, y, z; };
+    struct { float r, i, j, k; };
+    struct { float u; vec3 v;  };
+    float m[4];
 } quat;
 
 /// @brief The identity quaternion representing no rotation: (1, 0, 0, 0)
@@ -14,6 +17,7 @@ extern const quat quat_identity;
 
 #define FMT_QUAT "%f + %fi + %fj + %fk"
 #define XPD_QUAT(q) q.w, q.x, q.y, q.z
+#define XPD_QUAT_(q) q->w, q->x, q->y, q->z
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -31,6 +35,7 @@ extern const quat quat_identity;
 /// @return The newly created quaternion
 static inline quat Quat(float w, float x, float y, float z) { 
     return (quat) {x, y, z, w};
+    quat a;
 }
 /// @brief Create a quaternion from real and imaginary parts
 /// @param r real part
@@ -78,6 +83,31 @@ static inline quat Quat_AngleAxis(float angle, const vec3 v) {
     float sinA = sin(angle);
     return (quat) {cos(angle), sinA * v.x, sinA * v.y, sinA * v.z};
 }
+/// @brief Create a quaternion from rotation vector
+/// @param v The rotation vector
+/// @return The newly created quaternion
+static inline quat Quat_RotVec(const vec3 v) {
+    float length = len3(v);
+    if (length == 0.0) return quat_identity;
+
+    float halfAngle = length * 0.5;
+    float coeff = sin(halfAngle) / length;
+
+    return Quat(cos(halfAngle), v.x * coeff, v.y * coeff, v.z * coeff);
+}
+/// @brief Create a quaternion from a vector to another
+/// @param from The source
+/// @param to The destination
+/// @return The newly created quaternion
+static inline quat Quat_FromToVec(const vec3 from, const vec3 to) {
+    vec3 axis = cross3(from, to);
+    if (axis.x || axis.y || axis.z) {
+        axis = norm3(axis);
+        float angle = acos(dot3(from, to));
+        return Quat_AngleAxis(angle, axis);
+    }
+    return quat_identity;
+}
 
 /// @brief Add two quaternions
 /// @param a The left quaternion
@@ -99,10 +129,10 @@ static inline quat subQ(const quat a, const quat b) {
 /// @return The resulting quaternion
 static inline quat mulQ(const quat a, const quat b) {
     return (quat) {
-        (a.w * b.w) - (a.x * b.x) - (a.y * b.y) - (a.z * b.z),
-        (a.w * b.x) + (a.x * b.w) + (a.y * b.z) - (a.z * b.y),
-        (a.w * b.y) - (a.x * b.z) + (a.y * b.w) + (a.z * b.x),
-        (a.w * b.z) + (a.x * b.y) - (a.y * b.x) + (a.z * b.w)
+        (b.w * a.w) - (b.x * a.x) - (b.y * a.y) - (b.z * a.z),
+        (b.w * a.x) + (b.x * a.w) - (b.y * a.z) + (b.z * a.y),
+        (b.w * a.y) + (b.x * a.z) + (b.y * a.w) - (b.z * a.x),
+        (b.w * a.z) - (b.x * a.y) + (b.y * a.x) + (b.z * a.w)
     };
 }
 
@@ -177,15 +207,11 @@ static inline quat lnQ_Unit(const quat q) {
 /// @param t the power
 /// @return The resulting quaternion
 static inline quat powQ(const quat q, float t) {
-    return expQ(scaleQ(lnQ(q), t));
-}
-/// @brief Power of a unit quaternion
-/// @param q The quaternion
-/// @param t the power
-/// @return The resulting quaternion
-/// @note The quaternion is supposed to be unit, a.k.a of length 1. This speeds up the computation.
-static inline quat powQ_Unit(const quat q, float t) {
-    return expQ(scaleQ(lnQ_Unit(q), t));
+    float l = len3(*(vec3*)&q.x);
+    if (l == 0.0) return quat_identity;
+
+    float angle = acos(q.w) * t;
+    return Quat_V(cos(angle), scale3(*(vec3*)&q.x, sin(angle) / l));
 }
 
 static inline quat slerpQ(const quat a, const quat b, float t) {
@@ -194,7 +220,7 @@ static inline quat slerpQ(const quat a, const quat b, float t) {
 }
 static inline quat slerpQ_Unit(const quat a, const quat b, float t) {
     // c = a * (a^-1 * b)^t
-    return mulQ(a, powQ_Unit(mulQ(invQ(a), b), t));
+    return mulQ(a, powQ(mulQ(transpQ(a), b), t));
 }
 
 
@@ -229,6 +255,12 @@ quat* Quat_(float w, float x, float y, float z);
 /// @return The input quaternion
 /// @note This opperation overrides the current value
 quat* setQ_(quat* restrict q, float w, float x, float y, float z);
+/// @brief Set a quaternion from real and imaginary parts
+/// @param r real part
+/// @param i imaginary part
+/// @return The input quaternion
+/// @note This opperation overrides the current value
+quat* setQ_V(quat* restrict q, float r, vec3 i);
 /// @brief Set a quaternion from Euler angles
 /// @param q The quaternion to set
 /// @param yaw The angle around Y
@@ -272,7 +304,7 @@ quat* setQ_FromToVec_(quat* restrict q, const vec3* from, const vec3* to);
 /// @param r real part
 /// @param i imaginary part
 /// @return The newly created quaternion
-quat* newQuat_V(float r, const vec3* i);
+quat* newQuat_V(float r, const vec3 i);
 /// @brief Create a quaternion from euler angles
 /// @param yaw The angle around Y
 /// @param pitch The angle from the floor
@@ -509,19 +541,6 @@ quat* powQ_(const quat* q, float t, quat* restrict destination);
 /// @note This opperation overrides the current value
 /// @return The input quaternion
 quat* powQ_s(quat* restrict q, float t);
-/// @brief Power of a unit quaternion
-/// @param q The quaternion in the base
-/// @param t The exponent
-/// @param destination Where the result is stored
-/// @note Set destination to NULL for new value
-/// @return The destination value
-quat* powQ_Unit_(const quat* q, float t, quat* restrict destination);
-/// @brief Power of a unit quaternion
-/// @param q The quaternion in the base
-/// @param t The exponent
-/// @note This opperation overrides the current value
-/// @return The input quaternion
-quat* powQ_Unit_s(quat* restrict q, float t);
 
 /// @brief Spherical interpolation between quat a and quat b with factor t
 /// @param a The start position

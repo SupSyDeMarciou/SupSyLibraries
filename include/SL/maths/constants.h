@@ -13,6 +13,9 @@
 /// @brief Euler's number, e
 #define EULER_NUM 2.7182818284590452
 
+/// @brief Golden ratio
+#define PHI 1.6180339887498948482045868
+
 #define FLOAT_MIN 1e-37f
 #define FLOAT_MAX 1e38f
 

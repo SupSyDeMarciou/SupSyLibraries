@@ -227,7 +227,13 @@ float traceMat_(const mat* m);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-defineMat(2, 2)
+typedef struct Matrix2x2 {
+    uint r, c;
+    union {
+        struct { float m00, m10, m01, m11; };
+        float m[4];
+    };
+} mat2x2;
 
 /// @brief Create a 2x2 matrix
 /// @return The newly created matrix
@@ -374,7 +380,14 @@ vec2* mul2x2_2_s(const mat2x2* m, vec2* v);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-defineMat(3, 3)
+// defineMat(3, 3)
+typedef struct Matrix3x3 {
+    uint r, c;
+    union {
+        struct { float m00, m10, m20, m01, m11, m21, m02, m12, m22; };
+        float m[9];
+    };
+} mat3x3;
 
 
 static inline mat3x3 createMat3x3() { return (mat3x3) {3, 3, .m = {0, 0, 0, 0}}; }
@@ -387,7 +400,8 @@ static inline mat3x3 mul3x3T(mat3x3 a, mat3x3 b) { float c[9] = {0}; for (uint i
 static inline mat3x3 scale3x3(mat3x3 a, float s) { return createMat3x3_v((float[9]){a.m[0] * s, a.m[1] * s, a.m[2] * s, a.m[3] * s, a.m[4] * s, a.m[5] * s, a.m[6] * s, a.m[7] * s, a.m[8] * s}); }
 static inline float trace3x3(mat3x3 m) { return m.m[0] + m.m[3] + m.m[6]; }
 static inline float det3x3(mat3x3 m) { return m.m[0] * m.m[4] * m.m[8] + m.m[1] * m.m[5] * m.m[6] + m.m[2] * m.m[3] * m.m[7] - m.m[6] * m.m[4] * m.m[2] - m.m[7] * m.m[5] * m.m[0] - m.m[8] * m.m[3] * m.m[1]; }
-static inline mat3x3 inv3x3(mat3x3 m) { failWithError("NOT IMPLEMENTED"); }
+static inline mat3x3 inv3x3(mat3x3 m) { SL_throwError("NOT IMPLEMENTED"); }
+static inline mat3x3 transp3x3(mat3x3 m) { return createMat3x3_v((float[9]){m.m00, m.m01, m.m02, m.m10, m.m11, m.m12, m.m20, m.m21, m.m22});}
 
 
 
@@ -552,6 +566,22 @@ float det3x3_(const mat3x3* m);
 /// @note Set destination to NULL for new value
 /// @return The destination value
 mat3x3* inv3x3_(const mat3x3* m, mat3x3* destination);
+/// @brief Invert a 3x3 matrix
+/// @param m The matrix
+/// @return The input matrix
+/// @note This opperation overrides the current value
+mat3x3* inv3x3_s(mat3x3* restrict m);
+/// @brief Transpose a 3x3 matrix
+/// @param m The matrix
+/// @param destination Where the result is stored
+/// @note Set destination to NULL for new value
+/// @return The destination value
+mat3x3* transp3x3_(const mat3x3* m, mat3x3* destination);
+/// @brief Transpose a 3x3 matrix
+/// @param m The matrix
+/// @return The input matrix
+/// @note This opperation overrides the current value
+mat3x3* transp3x3_s(mat3x3* restrict m);
 
 vec3 mul3x3_3(const mat3x3* m, const vec3* v);
 vec3* mul3x3_3_(const mat3x3* m, vec3* v, vec3* c);
@@ -569,7 +599,14 @@ mat3x3* quatTo3x3_(const quat* q, mat3x3* destination);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-defineMat(4, 4)
+// defineMat(4, 4)
+typedef struct Matrix4x4 {
+    uint r, c;
+    union {
+        struct { float m00, m10, m20, m30, m01, m11, m21, m31, m02, m12, m22, m32, m03, m13, m23, m33; };
+        float m[16];
+    };
+} mat4x4;
 
 
 /// @brief Create a square matrix of size 4

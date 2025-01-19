@@ -7,26 +7,47 @@
 
 #include "../structures.h"
 
-#ifdef _glfw3_h_
-    /// @brief Terminates execution and prints to error output
-    /// @param message The message to be displayed when called
-    /// @note If using GLFW, will call terminate automatically
-    #define failWithError(message, ...) do { \
-        fprintf(stderr, "ERROR - [%s]:\n\t"message"\nat %s:%d\n", __FUNCTION__, ##__VA_ARGS__, __FILE__, __LINE__); \
-        glfwTerminate(); \
-        exit(EXIT_FAILURE); \
-    } while (false)
-#else
-    /// @brief Terminates execution and prints to error output
-    /// @param message The message to be displayed when called
-    /// @note If using GLFW, will call terminate automatically
-    #define failWithError(message, ...) do { \
-        fprintf(stderr, "ERROR - [%s]:\n\t"message"\nat %s:%d\n", __FUNCTION__, ##__VA_ARGS__, __FILE__, __LINE__); \
-        exit(EXIT_FAILURE); \
-    } while (false)
-#endif
+#define ESCAPE_CODE "\033"
+#define ANSII ESCAPE_CODE"["
 
-#define throwWarning(message, ...) fprintf(stderr, "WARNING - [%s]:\n\t"message"\nat %s:%d\n", __FUNCTION__, ##__VA_ARGS__, __FILE__, __LINE__)
+#define T_GRAPHICS(value) ANSII value "m"
+
+#define TG_RESET "0"
+#define TG_BOLD "1"
+#define TG_FAINT "2"
+#define TG_ITALIC "3"
+#define TG_UNDERLINE "4"
+#define TG_SLOW_BLINK "5"
+#define TG_FAST_BLINK "6"
+#define TG_INVERT "7"
+#define TG_STRIKE_THROUGH "9"
+
+#define TGC_FG "3"
+#define TGC_BG "4"
+#define TGC_FG_B "9"
+#define TGC_BG_B "10"
+
+#define TGC_BLACK "0"
+#define TGC_RED "1"
+#define TGC_GREEN "2"
+#define TGC_YELLOW "3"
+#define TGC_BLUE "4"
+#define TGC_MAGENTA "5"
+#define TGC_CYAN "6"
+#define TGC_WHITE "7"
+
+#define TG_COLOR(color, fgbg) T_GRAPHICS(fgbg color)
+#define TG_COLOR_B(color, fgbg) T_GRAPHICS(fgbg##_B color)
+
+/// @brief Terminates execution and prints to error output
+/// @param message The message to be displayed when called
+#define SL_throwError(message, ...) do { \
+    fprintf(stderr, TG_COLOR(TGC_RED, TGC_FG) "ERROR - [%s]:\n\t"message"\n"TG_COLOR(TGC_RED, TGC_FG)"at %s:%d"T_GRAPHICS(TG_RESET)"\n", __FUNCTION__, ##__VA_ARGS__, __FILE__, __LINE__); \
+    exit(EXIT_FAILURE); \
+} while (false)
+/// @brief Prints to error output
+/// @param message The message to be displayed when called
+#define SL_throwWarning(message, ...) fprintf(stderr, TG_COLOR(TGC_YELLOW, TGC_FG) "WARNING - [%s]:\n\t"message"\n"TG_COLOR(TGC_YELLOW, TGC_FG)"at %s:%d"T_GRAPHICS(TG_RESET)"\n", __FUNCTION__, ##__VA_ARGS__, __FILE__, __LINE__)
 
 /// @brief Reads the contents of a file at filePath in a string
 /// @param filePath The path to the file (full path)
@@ -43,14 +64,14 @@ char* SL_readFile(const char* filePath);
 /// @brief If a number is single-digit
 /// @param n The number to test
 /// @return If it is a single-digit number
-static inline int SL_isFigure(int n) {
+static inline bool SL_isFigure(int n) {
     return (n >= 0 && n < 10);
 }
 
 /// @brief If a character represents a number
 /// @param c The character to test
 /// @return If it is a number
-static inline int SL_isNum(char c) {
+static inline bool SL_isNum(char c) {
     return (c >= '0' && c <= '9');
 }
 
@@ -93,12 +114,17 @@ int SL_readNum(const char* line, uint i);
 /// @param a Left string
 /// @param b Right string
 /// @return Wether the two strings matched
-bool SL_cmpStr(const char* a, const char* b);
+bool SL_match(const char* a, const char* b);
+/// @brief Compare two strings with no regards for capitalization 
+/// @param a Left string
+/// @param b Right string
+/// @return Wether the two strings matched
+bool SL_match_NoCase(const char* a, const char* b);
 /// @brief Match a factor inside of a string
 /// @param text The text to inspect
 /// @param factor The factor to find
 /// @return Wether the factor appears in the text
-bool SL_matchFactor(const char* text, const char* factor);
+bool SL_match_Factor(const char* text, const char* factor);
 
 /// @brief Reallocate chunk of memory
 /// @param data The previously allocated data
