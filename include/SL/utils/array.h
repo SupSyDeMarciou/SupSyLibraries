@@ -127,6 +127,34 @@ void __SL_arrayAddMultiple(array_void* array, void* data, uint dataCount, size_t
 /// @param array The array
 #define arrayFirst_(array) (*(array)->data)
 
+#define arrayWrap(carray, count) ((array(typeof(carray[0]))){.data = carray, .capa = count, .count = count})
+#define arrayWrap_Var(v0, ...) {.data = (typeof(v0)[]){v0, ##__VA_ARGS__}, .capa = sizeof((typeof(v0)[]){v0, ##__VA_ARGS__}) / sizeof(v0), .count = sizeof((typeof(v0)[]){v0, ##__VA_ARGS__}) / sizeof(v0)}
+
+#define arraySort(array, varA, varB, conditionOnAAndB) do { \
+    uvec2 __SL_ARRAY_STACK__[1024] = {0}; \
+    uint __SL_ARRAY_STACK_IDX__ = 1; \
+    __SL_ARRAY_STACK__[0] = Uvec2(0, (array).count - 1); \
+    do { \
+        uvec2 __SL_ARRAY_A_B__ = __SL_ARRAY_STACK__[--__SL_ARRAY_STACK_IDX__]; \
+        if (__SL_ARRAY_A_B__.x >= __SL_ARRAY_A_B__.y) continue; \
+        __elemType(array) varA = (array).data[__SL_ARRAY_A_B__.y]; \
+        uint __SL_ARRAY_J__ = __SL_ARRAY_A_B__.x; \
+        for (uint __SL_ARRAY_I__ = __SL_ARRAY_A_B__.x; __SL_ARRAY_I__ < __SL_ARRAY_A_B__.y; ++__SL_ARRAY_I__) { \
+            __elemType(array) varB = (array).data[__SL_ARRAY_I__]; \
+            if (conditionOnAAndB) { \
+                (array).data[__SL_ARRAY_I__] = (array).data[__SL_ARRAY_J__]; \
+                (array).data[__SL_ARRAY_J__] = varB; \
+                ++__SL_ARRAY_J__; \
+            } \
+        } \
+        (array).data[__SL_ARRAY_A_B__.y] = (array).data[__SL_ARRAY_J__]; \
+        (array).data[__SL_ARRAY_J__] = varA; \
+        \
+        if (__SL_ARRAY_J__ > 0) __SL_ARRAY_STACK__[__SL_ARRAY_STACK_IDX__++] = Uvec2(__SL_ARRAY_A_B__.x, __SL_ARRAY_J__ - 1); \
+        __SL_ARRAY_STACK__[__SL_ARRAY_STACK_IDX__++] = Uvec2(__SL_ARRAY_J__ + 1, __SL_ARRAY_A_B__.y); \
+    } while (__SL_ARRAY_STACK_IDX__); \
+} while (0);
+
 #define __SL_array_foreach(varname, array_) for (typeof((array_).data[0]) *varname = (array_).data, *varname##Max = (void*)(((size_t)(array_).data) + (array_).count * __elemSize(array_)); (size_t)varname < (size_t)varname##Max; ++varname)
 /// @brief Iterate over every element in array
 /// @param VARNAME_in_ARRAY Should litteraly the name of the variable used to iterate followed by "in" then the name of the array

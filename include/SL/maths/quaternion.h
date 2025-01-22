@@ -9,6 +9,7 @@ typedef union Quaternion {
     struct { float w, x, y, z; };
     struct { float r, i, j, k; };
     struct { float u; vec3 v;  };
+    vec4 asV4;
     float m[4];
 } quat;
 

@@ -6,18 +6,21 @@
 /// @brief Supported image extensions
 // (Lol I wish)
 typedef enum ImageExtensions {
+    IMG_EXT_DETECT = 0,
     IMG_EXT_PNG,
     IMG_EXT_BMP,
-    IMG_EXT_JPEG,
+    IMG_EXT_JPG,
     IMG_EXT_TIFF,
-    IMG_EXT_PPM
+    IMG_EXT_PPM,
+    IMG_EXT_QOI,
 } img_ext;
 
 /// @brief Raw image data
 typedef struct Image2D {
     uvec2 size;
-    uint8* rawData;
     uint8 channelCount;
+    uint8 bitDepth;
+    uint8* rawData;
 } image2D;
 
 /// @brief Destroy a 2D image
