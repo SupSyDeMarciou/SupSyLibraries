@@ -16,9 +16,16 @@
 
 #define uint unsigned int
 
+#define char8 char
+#define char16 wchar_t
+#define char32 uint32
+
 #define ALWAYS_INLINE inline __attribute__((always_inline))
 
 /// @brief Just for synthaxic purposes, may conflict with some libs
 #define IN ,
+
+#define as(newType, value)  (*(newType*)(void*)&(value))
+#define as_(newType, value) ((newType*)(void*)(value))
 
 #endif

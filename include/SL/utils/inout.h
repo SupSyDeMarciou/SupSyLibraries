@@ -120,6 +120,11 @@ bool SL_match(const char* a, const char* b);
 /// @param b Right string
 /// @return Wether the two strings matched
 bool SL_match_NoCase(const char* a, const char* b);
+/// @brief Find prefix at start of text
+/// @param text Where to search
+/// @param prefix The prefix to find
+/// @return Wether the prefix has been found
+bool SL_match_Start(const char* text, const char* prefix);
 /// @brief Match a factor inside of a string
 /// @param text The text to inspect
 /// @param factor The factor to find

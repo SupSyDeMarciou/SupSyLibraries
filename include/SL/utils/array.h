@@ -3,11 +3,19 @@
 
 #include "../structures.h"
 
-/// @brief To allow for generic use of these arrays
-// typedef struct ArrayVoid { uint count; size_t capa; void* data; } array_void;
-// #define array(type) union { struct { uint count; size_t capa; type* data; }; array_void v; }
-typedef struct ArrayVoid { uint count; size_t capa; void* data; } array_void;
-#define array(type) union { struct { uint count; size_t capa; type* data; }; array_void v; }
+#define __SL_DEFINE_ARRAY_0P(type, type_with_p_instead_of_stars_a) typedef struct type_with_p_instead_of_stars_a   { type* data;    uint count; size_t capa; }    type_with_p_instead_of_stars_a
+#define __SL_DEFINE_ARRAY_1P(type, type_with_p_instead_of_stars)   typedef struct type_with_p_instead_of_stars##_a { type** data;   uint count; size_t capa; }   type_with_p_instead_of_stars##_a
+#define __SL_DEFINE_ARRAY_2P(type, type_with_p_instead_of_stars)   typedef struct type_with_p_instead_of_stars##_a { type*** data;  uint count; size_t capa; }  type_with_p_instead_of_stars##_a
+#define __SL_DEFINE_ARRAY_3P(type, type_with_p_instead_of_stars)   typedef struct type_with_p_instead_of_stars##_a { type**** data; uint count; size_t capa; } type_with_p_instead_of_stars##_a
+#define SL_DEFINE_ARRAY(type) \
+    __SL_DEFINE_ARRAY_0P (type, type##_a ); \
+    __SL_DEFINE_ARRAY_1P (type, type##p  ); \
+    __SL_DEFINE_ARRAY_2P (type, type##pp ); \
+    __SL_DEFINE_ARRAY_3P (type, type##ppp)
+
+#define array(type, ...) type##__VA_ARGS__##_a
+
+SL_DEFINE_ARRAY(void);
 
 /// @brief Type of an array element
 /// @param array_ The array
@@ -17,15 +25,10 @@ typedef struct ArrayVoid { uint count; size_t capa; void* data; } array_void;
 #define __elemSize(array_) sizeof(typeof((array_).data[0]))
 
 /// @brief Create an array ON STACK
-/// @param type The type of the array elements
+/// @param array_type The type of the array (Use "array(type)" with the type of the element to store)
 /// @param initialCapacity The initial capacity of the array (will use closest power of two above)
 /// @return The newly created array
-#define createArray(type, initialCapcity) {.data = calloc(initialCapcity, sizeof(type)), .count = 0, .capa = initialCapcity * sizeof(type)}
-/// @brief Create an array ON STACK on existing memory
-/// @param type The type of the array elements
-/// @param initialCapacity The initial capacity of the array (will use closest power of two above)
-/// @return The newly created array
-#define createArray_2(array_, initialCapcity) array_ = ((typeof(array_)){.data = calloc(initialCapcity, __elemSize(array_)), .count = 0, .capa = initialCapcity * __elemSize(array_)})
+#define createArray(array_type, initialCapcity) ((array_type){.data = calloc(initialCapcity, sizeof(((array_type){0}).data[0])), .count = 0, .capa = initialCapcity * sizeof(((array_type){0}).data[0])})
 /// @brief Destroy an array
 /// @param toFree The array to destroy
 #define destroyArray(array) (free((array).data))
@@ -34,7 +37,7 @@ typedef struct ArrayVoid { uint count; size_t capa; void* data; } array_void;
 /// @param initialCapacity The initial capacity of the array (will use closest power of two above)
 /// @return The newly created array
 /// @note Consider using "newArray" macro instead
-array_void* __SL_newArray(size_t elemSize, uint capacity);
+void_a* __SL_newArray(size_t elemSize, uint capacity);
 /// @brief Create a new array ON HEAP
 /// @param elemSize The size of an array element
 /// @param initialCapacity The initial capacity of the array (will use closest power of two above)
@@ -49,34 +52,34 @@ array_void* __SL_newArray(size_t elemSize, uint capacity);
 /// @param newCount The number of elements to accomodate
 /// @param elemSize The size of an array element
 /// @note Every function provided by the SL already calls this function when adding elements
-void __SL_arrayCheckResize(array_void* array, uint newCount, size_t elemSize);
+void __SL_arrayCheckResize(array(void)* array, uint newCount, size_t elemSize);
 /// @brief Add a C-array to the end of an array
 /// @param array The array to expand
 /// @param data The C-array to add
 /// @param dataCount The size of the C-array
 /// @param elemSize The size of an array element
 /// @note Consider using "arrayAdd", "arrayAdd_T" or "arrayAdd_M" macros instead
-void __SL_arrayAddMultiple(array_void* array, void* data, uint dataCount, size_t elemSize);
+void __SL_arrayAddMultiple(array(void)* array, void* data, uint dataCount, size_t elemSize);
 
 /// @brief Add an element to an array
 /// @param array_ The array to modify
-/// @param value The value to add
-#define arrayAdd(array_, value)  do { __SL_arrayCheckResize((void*)&(array_), (array_).count + 1,  __elemSize(array_));  (array_).data[(array_).count++]   = value; } while (0)
+/// @param ... The value to add
+#define arrayAdd(array_, ...)  do { __SL_arrayCheckResize((void*)&(array_), (array_).count + 1,  __elemSize(array_));  (array_).data[(array_).count++]   = __VA_ARGS__; } while (0)
 /// @brief Add an element to an array
 /// @param array_ The array to modify
-/// @param value The value to add
-#define arrayAdd_(array_, value) do { __SL_arrayCheckResize((void*) (array_), (array_)->count + 1, __elemSize(*array_)); (array_)->data[(array_)->count++] = value; } while (0)
+/// @param ... The value to add
+#define arrayAdd_(array_, ...) do { __SL_arrayCheckResize((void*) (array_), (array_)->count + 1, __elemSize(*array_)); (array_)->data[(array_)->count++] = __VA_ARGS__; } while (0)
 
 /// @brief Add multiple elements to an array (C-array version)
 /// @param a The array to modify
 /// @param elements The elements to add
 /// @param count The number of elements to add
-#define arrayAdd_T(array_, elements, count)  __SL_arrayAddMultiple(&(array_).v, elements, count, __elemSize(array_));
+#define arrayAdd_T(array_, elements, count)  __SL_arrayAddMultiple((void*)&(array_), elements, count, __elemSize(array_));
 /// @brief Add multiple elements to an array (C-array version)
 /// @param a The array to modify
 /// @param elements The elements to add
 /// @param count The number of elements to add
-#define arrayAdd_T_(array_, elements, count) __SL_arrayAddMultiple(&(array_)->v, elements, count, __elemSize(*array_));
+#define arrayAdd_T_(array_, elements, count) __SL_arrayAddMultiple((void*)&(array_), elements, count, __elemSize(*array_));
 
 /// @brief Add multiple elements to an array (Variadic version)
 /// @param a The array to modify

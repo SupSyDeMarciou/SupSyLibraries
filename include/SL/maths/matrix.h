@@ -227,12 +227,15 @@ float traceMat_(const mat* m);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-typedef struct Matrix2x2 {
-    uint r, c;
-    union {
-        struct { float m00, m10, m01, m11; };
-        float m[4];
+typedef union Matrix2x2 {
+    struct {
+        uint r, c;
+        union {
+            struct { float m00, m10, m01, m11; };
+            float m[4];
+        };
     };
+    mat v;
 } mat2x2;
 
 /// @brief Create a 2x2 matrix
@@ -380,13 +383,15 @@ vec2* mul2x2_2_s(const mat2x2* m, vec2* v);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-// defineMat(3, 3)
-typedef struct Matrix3x3 {
-    uint r, c;
-    union {
-        struct { float m00, m10, m20, m01, m11, m21, m02, m12, m22; };
-        float m[9];
+typedef union Matrix3x3 {
+    struct {
+        uint r, c;
+        union {
+            struct { float m00, m10, m20, m01, m11, m21, m02, m12, m22; };
+            float m[9];
+        };
     };
+    mat v;
 } mat3x3;
 
 
@@ -599,13 +604,15 @@ mat3x3* quatTo3x3_(const quat* q, mat3x3* destination);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-// defineMat(4, 4)
-typedef struct Matrix4x4 {
-    uint r, c;
-    union {
-        struct { float m00, m10, m20, m30, m01, m11, m21, m31, m02, m12, m22, m32, m03, m13, m23, m33; };
-        float m[16];
+typedef union Matrix4x4 {
+    struct {
+        uint r, c;
+        union {
+            struct { float m00, m10, m20, m30, m01, m11, m21, m31, m02, m12, m22, m32, m03, m13, m23, m33; };
+            float m[16];
+        };
     };
+    mat v;
 } mat4x4;
 
 

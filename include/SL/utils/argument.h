@@ -22,6 +22,8 @@ typedef union CMD_ArgValue {
     float float_;
     char* string;
 } cmd_arg_val;
+SL_DEFINE_ARRAY(cmd_arg_val);
+
 /// @brief A command line argument
 typedef struct CMD_Argument {
     union {
@@ -39,11 +41,12 @@ typedef struct CMD_Argument {
 
     char *description;
 } cmd_arg;
+SL_DEFINE_ARRAY(cmd_arg);
 
 /// @brief Set the accepted values for a command line argument
 /// @param arg The argument
 /// @param values The accepted values
-void cmd_argSetAcceptedValues(cmd_arg* arg, array_void values);
+void cmd_argSetAcceptedValues(cmd_arg* arg, array(cmd_arg_val) values);
 /// @brief Get index of read value in "accepted values" array
 /// @param arg The argument
 /// @return The index of the read value or -1 if not assigned or has no accepted values

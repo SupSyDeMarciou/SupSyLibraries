@@ -171,23 +171,23 @@
     __SL_GEN_generateVector_Generic_STRUCT(type, Type, aMin, aMaj, 2) \
     __SL_GEN_generateVector_Generic_POINTER_EXT(type, Type, aMin, aMaj, 2) \
     __SL_GEN_generateVector_Generic_POINTER_SELF(type, Type, aMin, aMaj, 2) \
-    static inline aMin##vec2 aMin##vec2One(type s) { return aMaj##ec2(s, s); } \
-    static inline aMin##vec2* aMin##vec2One_(type s) { return new##aMaj##ec2(s, s); } \
+    static ALWAYS_INLINE aMin##vec2 aMin##vec2One(type s) { return aMaj##ec2(s, s); } \
+    static ALWAYS_INLINE aMin##vec2* aMin##vec2One_(type s) { return new##aMaj##ec2(s, s); } \
     \
     typedef struct Type##Vector3 { union {struct {type x, y, z;}; struct {type r, g, b;}; struct {type u, v, s;}; type m[3];}; } aMin##vec3; \
     extern const aMin##vec3 aMin##vec3_right; \
     extern const aMin##vec3 aMin##vec3_left; \
     extern const aMin##vec3 aMin##vec3_up; \
     extern const aMin##vec3 aMin##vec3_down; \
-    extern const aMin##vec3 aMin##vec3_forward; \
+    extern const aMin##vec3 aMin##vec3_forw; \
     extern const aMin##vec3 aMin##vec3_back; \
     extern const aMin##vec3 aMin##vec3_zero; \
     extern const aMin##vec3 aMin##vec3_one; \
     __SL_GEN_generateVector_Generic_STRUCT(type, Type, aMin, aMaj, 3) \
     __SL_GEN_generateVector_Generic_POINTER_EXT(type, Type, aMin, aMaj, 3) \
     __SL_GEN_generateVector_Generic_POINTER_SELF(type, Type, aMin, aMaj, 3) \
-    static inline aMin##vec3 aMin##vec3One(type s) { return aMaj##ec3(s, s, s); } \
-    static inline aMin##vec3* aMin##vec3One_(type s) { return new##aMaj##ec3(s, s, s); } \
+    static ALWAYS_INLINE aMin##vec3 aMin##vec3One(type s) { return aMaj##ec3(s, s, s); } \
+    static ALWAYS_INLINE aMin##vec3* aMin##vec3One_(type s) { return new##aMaj##ec3(s, s, s); } \
     \
     typedef struct Type##Vector4 { union {struct {type x, y, z, w;}; struct {type r, g, b, a;}; struct {type u, v, s, t;}; type m[4];}; } aMin##vec4; \
     extern const aMin##vec4 aMin##vec4_zero; \
@@ -195,18 +195,19 @@
     __SL_GEN_generateVector_Generic_STRUCT(type, Type, aMin, aMaj, 4) \
     __SL_GEN_generateVector_Generic_POINTER_EXT(type, Type, aMin, aMaj, 4) \
     __SL_GEN_generateVector_Generic_POINTER_SELF(type, Type, aMin, aMaj, 4) \
-    static inline aMin##vec4 aMin##vec4One(type s) { return aMaj##ec4(s, s, s, s); } \
-    static inline aMin##vec4* aMin##vec4One_(type s) { return new##aMaj##ec4(s, s, s, s); } \
+    static ALWAYS_INLINE aMin##vec4 aMin##vec4One(type s) { return aMaj##ec4(s, s, s, s); } \
+    static ALWAYS_INLINE aMin##vec4* aMin##vec4One_(type s) { return new##aMaj##ec4(s, s, s, s); } \
     \
-    static inline aMin##vec3 aMin##vec2To3 (const aMin##vec2 v) { return (aMin##vec3){v.x, v.y, 0}; }; \
-    static inline aMin##vec3 aMin##vec2To3_z(const aMin##vec2 v, type z) { return (aMin##vec3){v.x, v.y, z}; }; \
-    static inline aMin##vec4 aMin##vec2To4(const aMin##vec2 v) { return (aMin##vec4){v.x, v.y, 0, 0}; }; \
-    static inline aMin##vec4 aMin##vec2To4_zw(const aMin##vec2 v, type z, type w) { return (aMin##vec4){v.x, v.y, z, w}; }; \
-    static inline aMin##vec4 aMin##vec3To4(const aMin##vec3 v) { return (aMin##vec4){v.x, v.y, v.z, 0}; }; \
-    static inline aMin##vec4 aMin##vec3To4_w(const aMin##vec3 v, type w) { return (aMin##vec4){v.x, v.y, v.z, w}; }; \
-    static inline aMin##vec2 aMin##vec3To2(const aMin##vec3 v) { return (aMin##vec2){v.x, v.y}; }; \
-    static inline aMin##vec3 aMin##vec4To3(const aMin##vec4 v) { return (aMin##vec3){v.x, v.y, v.z}; }; \
-    static inline aMin##vec2 aMin##vec4To2(const aMin##vec4 v) { return (aMin##vec2){v.x, v.y}; }; \
+    static ALWAYS_INLINE aMin##vec2 __SL_swizzle##aMin##2(const type* m, uint x, uint y)                   { return (aMin##vec2){m[x], m[y]}; } \
+    static ALWAYS_INLINE aMin##vec3 __SL_swizzle##aMin##3(const type* m, uint x, uint y, uint z)           { return (aMin##vec3){m[x], m[y], m[z]}; } \
+    static ALWAYS_INLINE aMin##vec4 __SL_swizzle##aMin##4(const type* m, uint x, uint y, uint z, uint w)   { return (aMin##vec4){m[x], m[y], m[z], m[w]}; } \
+    \
+    static ALWAYS_INLINE aMin##vec3 aMin##vec2To3 (const aMin##vec2 v) { return (aMin##vec3){v.x, v.y, 0}; }; \
+    static ALWAYS_INLINE aMin##vec3 aMin##vec2To3_z(const aMin##vec2 v, type z) { return (aMin##vec3){v.x, v.y, z}; }; \
+    static ALWAYS_INLINE aMin##vec4 aMin##vec2To4(const aMin##vec2 v) { return (aMin##vec4){v.x, v.y, 0, 0}; }; \
+    static ALWAYS_INLINE aMin##vec4 aMin##vec2To4_zw(const aMin##vec2 v, type z, type w) { return (aMin##vec4){v.x, v.y, z, w}; }; \
+    static ALWAYS_INLINE aMin##vec4 aMin##vec3To4(const aMin##vec3 v) { return (aMin##vec4){v.x, v.y, v.z, 0}; }; \
+    static ALWAYS_INLINE aMin##vec4 aMin##vec3To4_w(const aMin##vec3 v, type w) { return (aMin##vec4){v.x, v.y, v.z, w}; }; \
 
 __SL_GEN_generateVector_Type(float, Float, , V)
 __SL_GEN_generateVector_Type(double, Double, d, Dv)
@@ -242,6 +243,30 @@ __SL_GEN_generateConvert_Full(b, Bv, d, Dv, i, Iv, li, Liv, u, Uv, lu, Luv, , V)
 
 
 
+#define __SL_SwizzleBound(vec, mask, i) (#mask[i]-'x' >= 0 && #mask[i]-'x' < sizeof(vec) / sizeof((vec).x))
+#define swizz2(vec, xy)     __SL_swizzle2   (vec.m, #xy[0] - 'x',   #xy[1] - 'x')                                  
+#define swizz3(vec, xyz)    __SL_swizzle3   (vec.m, #xyz[0] - 'x',  #xyz[1] - 'x',  #xyz[2] - 'x')                 
+#define swizz4(vec, xyzw)   __SL_swizzle4   (vec.m, #xyzw[0] - 'x', #xyzw[1] - 'x', #xyzw[2] - 'x', #xyzw[3] - 'x') 
+#define swizzd2(vec, xy)    __SL_swizzled2  (vec.m, #xy[0] - 'x',   #xy[1] - 'x')                                  
+#define swizzd3(vec, xyz)   __SL_swizzled3  (vec.m, #xyz[0] - 'x',  #xyz[1] - 'x',  #xyz[2] - 'x')                 
+#define swizzd4(vec, xyzw)  __SL_swizzled4  (vec.m, #xyzw[0] - 'x', #xyzw[1] - 'x', #xyzw[2] - 'x', #xyzw[3] - 'x') 
+#define swizzi2(vec, xy)    __SL_swizzlei2  (vec.m, #xy[0] - 'x',   #xy[1] - 'x')                                  
+#define swizzi3(vec, xyz)   __SL_swizzlei3  (vec.m, #xyz[0] - 'x',  #xyz[1] - 'x',  #xyz[2] - 'x')                 
+#define swizzi4(vec, xyzw)  __SL_swizzlei4  (vec.m, #xyzw[0] - 'x', #xyzw[1] - 'x', #xyzw[2] - 'x', #xyzw[3] - 'x') 
+#define swizzu2(vec, xy)    __SL_swizzleu2  (vec.m, #xy[0] - 'x',   #xy[1] - 'x')                                  
+#define swizzu3(vec, xyz)   __SL_swizzleu3  (vec.m, #xyz[0] - 'x',  #xyz[1] - 'x',  #xyz[2] - 'x')                 
+#define swizzu4(vec, xyzw)  __SL_swizzleu4  (vec.m, #xyzw[0] - 'x', #xyzw[1] - 'x', #xyzw[2] - 'x', #xyzw[3] - 'x') 
+#define swizzli2(vec, xy)   __SL_swizzleli2 (vec.m, #xy[0] - 'x',   #xy[1] - 'x')                                  
+#define swizzli3(vec, xyz)  __SL_swizzleli3 (vec.m, #xyz[0] - 'x',  #xyz[1] - 'x',  #xyz[2] - 'x')                 
+#define swizzli4(vec, xyzw) __SL_swizzleli4 (vec.m, #xyzw[0] - 'x', #xyzw[1] - 'x', #xyzw[2] - 'x', #xyzw[3] - 'x') 
+#define swizzlu2(vec, xy)   __SL_swizzlelu2 (vec.m, #xy[0] - 'x',   #xy[1] - 'x')                                  
+#define swizzlu3(vec, xyz)  __SL_swizzlelu3 (vec.m, #xyz[0] - 'x',  #xyz[1] - 'x',  #xyz[2] - 'x')                 
+#define swizzlu4(vec, xyzw) __SL_swizzlelu4 (vec.m, #xyzw[0] - 'x', #xyzw[1] - 'x', #xyzw[2] - 'x', #xyzw[3] - 'x') 
+#define swizzb2(vec, xy)    __SL_swizzleb2  (vec.m, #xy[0] - 'x',   #xy[1] - 'x')                                  
+#define swizzb3(vec, xyz)   __SL_swizzleb3  (vec.m, #xyz[0] - 'x',  #xyz[1] - 'x',  #xyz[2] - 'x')                 
+#define swizzb4(vec, xyzw)  __SL_swizzleb4  (vec.m, #xyzw[0] - 'x', #xyzw[1] - 'x', #xyzw[2] - 'x', #xyzw[3] - 'x') 
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////// STRUCT  VECTORS /////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -249,18 +274,22 @@ __SL_GEN_generateConvert_Full(b, Bv, d, Dv, i, Iv, li, Liv, u, Uv, lu, Luv, , V)
 
 
 // Cross product of two vec3
-static inline vec3 cross3(const vec3 a, const vec3 b) { return Vec3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x); }
+static inline vec3 cross3(const vec3 a, const vec3 b)         { return Vec3  (a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x); }
 // Cross product of two dvec3
-static inline dvec3 crossd3(const dvec3 a, const dvec3 b) { return Dvec3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x); }
+static inline dvec3 crossd3(const dvec3 a, const dvec3 b)     { return Dvec3 (a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x); }
 // Cross product of two ivec3
-static inline ivec3 crossi3(const ivec3 a, const ivec3 b) { return Ivec3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x); }
+static inline ivec3 crossi3(const ivec3 a, const ivec3 b)     { return Ivec3 (a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x); }
+// Cross product of two livec3
+static inline livec3 crossli3(const livec3 a, const livec3 b) { return Livec3(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x); }
 
 // Cross product of two vec3
-static inline vec3* cross3_(const vec3* a, const vec3* b, vec3* c) { if (!c) c = malloc(sizeof(vec3)); return set3_(c, a->y * b->z - a->z * b->y, a->z * b->x - a->x * b->z, a->x * b->y - a->y * b->x); }
+static inline vec3* cross3_(const vec3* a, const vec3* b, vec3* c)           { set3_  (c ? c : malloc(sizeof(vec3)),   a->y * b->z - a->z * b->y, a->z * b->x - a->x * b->z, a->x * b->y - a->y * b->x); }
 // Cross product of two dvec3
-static inline dvec3* crossd3_(const dvec3* a, const dvec3* b, dvec3* c) { if (!c) c = malloc(sizeof(dvec3)); return setd3_(c, a->y * b->z - a->z * b->y, a->z * b->x - a->x * b->z, a->x * b->y - a->y * b->x); }
+static inline dvec3* crossd3_(const dvec3* a, const dvec3* b, dvec3* c)      { setd3_ (c ? c : malloc(sizeof(dvec3)),  a->y * b->z - a->z * b->y, a->z * b->x - a->x * b->z, a->x * b->y - a->y * b->x); }
 // Cross product of two ivec3
-static inline ivec3* crossi3_(const ivec3* a, const ivec3* b, ivec3* c) { if (!c) c = malloc(sizeof(ivec3)); return seti3_(c, a->y * b->z - a->z * b->y, a->z * b->x - a->x * b->z, a->x * b->y - a->y * b->x); }
+static inline ivec3* crossi3_(const ivec3* a, const ivec3* b, ivec3* c)      { seti3_ (c ? c : malloc(sizeof(ivec3)),  a->y * b->z - a->z * b->y, a->z * b->x - a->x * b->z, a->x * b->y - a->y * b->x); }
+// Cross product of two ivec3
+static inline livec3* crossli3_(const livec3* a, const livec3* b, livec3* c) { setli3_(c ? c : malloc(sizeof(livec3)), a->y * b->z - a->z * b->y, a->z * b->x - a->x * b->z, a->x * b->y - a->y * b->x); }
 
 
 
