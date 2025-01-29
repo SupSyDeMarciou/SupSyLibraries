@@ -12,6 +12,7 @@
 #include "SL/utils/inout.h"
 #include "SL/utils/list.h"
 #include "SL/utils/array.h"
+#include "SL/utils/array_def.h"
 #include "SL/utils/imageImporter.h"
 #include "SL/utils/arenaAlloc.h"
 #include "SL/utils/hashtbl.h"
