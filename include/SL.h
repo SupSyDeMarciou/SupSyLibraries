@@ -12,10 +12,11 @@
 #include "SL/utils/inout.h"
 #include "SL/utils/list.h"
 #include "SL/utils/array.h"
-#include "SL/utils/array_def.h"
 #include "SL/utils/imageImporter.h"
 #include "SL/utils/arenaAlloc.h"
 #include "SL/utils/hashtbl.h"
 #include "SL/utils/argument.h"
+
+#include "SL/utils/iter_def.h"
 
 #endif
